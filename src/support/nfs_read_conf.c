@@ -372,7 +372,7 @@ static struct config_item version4_params[] = {
 		       nfs_version4_parameter, recov_dir),
 	CONF_ITEM_PATH("RecoveryOldDir", 1, MAXNAMLEN, NFS_V4_OLD_DIR,
 		       nfs_version4_parameter, recov_old_dir),
-	CONF_ITEM_LIST("minor_versions", NFSV4_MINOR_VERSION_ALL,
+	CONF_ITEM_LIST("minor_versions", NFSV4_MINOR_VERSION_ZERO,
 		       minor_versions, nfs_version4_parameter, minor_versions),
 	CONF_ITEM_UI32("slot_table_size", 1, 1024, NFS41_NB_SLOTS_DEF,
 		       nfs_version4_parameter, nb_slots),
