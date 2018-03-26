@@ -571,6 +571,7 @@ exit 0
 %endif
 
 %files
+%{_bindir}/gpfs.ganesha.nfsd
 %{_libdir}/libganesha_nfsd.so*
 %{_bindir}/gpfs.ganesha.nfsd
 
