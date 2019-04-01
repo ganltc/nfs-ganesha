@@ -3496,6 +3496,8 @@ _mdcache_kill_entry(mdcache_entry_t *entry,
  */
 void mdc_update_attr_cache(mdcache_entry_t *entry, struct fsal_attrlist *attrs)
 {
+	bool old_acl = false;
+
 	if (entry->attrs.acl != NULL) {
 		/* We used to have an ACL... */
 		if (attrs->acl != NULL) {
@@ -3512,6 +3514,12 @@ void mdc_update_attr_cache(mdcache_entry_t *entry, struct fsal_attrlist *attrs)
 			 */
 			attrs->acl = entry->attrs.acl;
 			attrs->valid_mask |= ATTR_ACL;
+			/* fsal_copy_attrs will preserve the ACLs only if
+			 * request mask has ATTR_ACL flag enabled. And
+			 * remember that we have old ACLs. 
+			 */
+			entry->attrs.request_mask |= ATTR_ACL;
+			old_acl = true;
 		}
 
 		/* NOTE: Because we already had an ACL,
@@ -3569,6 +3577,12 @@ void mdc_update_attr_cache(mdcache_entry_t *entry, struct fsal_attrlist *attrs)
 
 	/* Now move the new attributes into the entry. */
 	fsal_copy_attrs(&entry->attrs, attrs, true);
+
+	/* If we are carrying old ACLs, we should not update acl_time,
+	 * unset the ATTR_ACL bit from request_mask
+	 */
+	if (old_acl)
+		entry->attrs.request_mask &= ~ATTR_ACL;
 
 	/* Note that we use &entry->attrs here in case attrs.request_mask was
 	 * modified by the FSAL. entry->attrs.request_mask reflects the
