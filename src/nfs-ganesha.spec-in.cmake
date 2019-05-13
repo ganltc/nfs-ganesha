@@ -567,7 +567,13 @@ cmake3 .	-DCMAKE_BUILD_TYPE=Debug			\
 	-DSANITIZE_ADDRESS=%{use_sanitize_address}	\
 	-DUSE_LEGACY_PYTHON_INSTALL=%{use_legacy_python_install}	\
 %if %{with jemalloc}
-	-DALLOCATOR=jemalloc
+	-DALLOCATOR=jemalloc 				\
+%endif
+%if ( %{with gpfs} && %{with mspac_support} )
+	-DWBCLIENT_INCLUDE_DIR=/usr/lpp/mmfs/include/samba-4.0		\
+	-DWBCLIENT_LIBRARIES=/usr/lpp/mmfs/lib64/libwbclient.so.0	\
+	-DCMAKE_INSTALL_RPATH=/usr/lpp/mmfs/lib64/			\
+	-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
 %endif
 %if %{with tcmalloc}
 	-DALLOCATOR=tcmalloc
