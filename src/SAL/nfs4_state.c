@@ -827,7 +827,6 @@ void release_openstate(state_owner_t *owner)
 			 * die, skip for now.
 			 */
 			PTHREAD_MUTEX_unlock(&owner->so_mutex);
-			errcnt++;
 			continue;
 		}
 
