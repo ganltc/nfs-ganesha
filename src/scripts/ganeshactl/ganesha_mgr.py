@@ -213,6 +213,21 @@ class ServerAdmin():
                 pass
         else:
             self.status_message(status, msg)
+    def trim_enable(self):
+        status, msg = self.admin.trim_enable()
+        self.status_message(status, msg)
+
+    def trim_disable(self):
+        status, msg = self.admin.trim_disable()
+        self.status_message(status, msg)
+
+    def trim_call(self):
+        status, msg = self.admin.trim_call()
+        self.status_message(status, msg)
+
+    def trim_status(self):
+        status, msg = self.admin.trim_status()
+        self.status_message(status, msg)
 
     def status_message(self, status, errormsg):
         print("Returns: status = %s, %s" % (str(status), errormsg))
@@ -353,6 +368,11 @@ if __name__ == '__main__':
        "      posix_fs: Displays the mounted POSIX filesystems\n"                  \
        "      exports: Displays all current exports\n"                             \
        "      idmap: Displays the idmapper cache\n\n"                              \
+       "   trim :\n"                                                               \
+       "      enable: Enable malloc trim\n"                                        \
+       "      disable: Disable malloc trim\n"                                      \
+       "      call: Call malloc trim\n"                                            \
+       "      status: Get current malloc trim status\n\n"                          \
        "   grace: \n"                                                              \
        "      ipaddr: Begins grace for the given IP\n\n"                           \
        "   get: \n"                                                                \
@@ -495,6 +515,39 @@ if __name__ == '__main__':
         else:
             msg = "Setting '%s' is not supported" % sys.argv[2]
             sys.exit(msg)
+
+    elif sys.argv[1] == "trim":
+        if len(sys.argv) < 3:
+            print("trim requires enable/disable/call/status arg. "
+                  "Try \"ganesha_mgr.py help\" for more info")
+            sys.exit(1)
+
+        if sys.argv[2] == 'enable':
+            ganesha.trim_enable()
+        elif sys.argv[2] == 'disable':
+            ganesha.trim_disable()
+        elif sys.argv[2] == 'status':
+            ganesha.trim_status()
+        elif sys.argv[2] == 'call':
+            ganesha.trim_call()
+        else:
+            msg = "trim '%s' is unknown" % sys.argv[2]
+            sys.exit(msg)
+
+    elif sys.argv[1] == "set_log":
+        if len(sys.argv) < 4:
+           print("set_log requires a component and a log level."\
+                 " Try \"ganesha_mgr.py help\" for more info")
+           sys.exit(1)
+        logmgr.set(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "get_log":
+        if len(sys.argv) < 3:
+           print("get_log requires a component."\
+                 " Try \"ganesha_mgr.py help\" for more info")
+           sys.exit(1)
+        logmgr.get(sys.argv[2])
+    elif sys.argv[1] == "getall_logs":
+        logmgr.getall()
 
     # get
     elif sys.argv[1] == "get":

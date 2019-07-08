@@ -38,6 +38,7 @@
 #ifdef LINUX
 #include <mcheck.h>		/* For mtrace/muntrace */
 #endif
+#include <malloc.h>
 
 #include "nfs_core.h"
 #include "log.h"
@@ -428,6 +429,16 @@ admin_dbus_malloc_trace(DBusMessageIter *args,
 	return success;
 }
 
+static struct gsh_dbus_method method_malloc_trace = {
+	.name = "malloc_trace",
+	.method = admin_dbus_malloc_trace,
+	.args = {{ .name = "tracefile",
+		   .type = "s",
+		   .direction = "in"},
+		 STATUS_REPLY,
+		 END_ARG_LIST}
+};
+
 /**
  * @brief Dbus method for disabling malloc trace
  *
@@ -462,16 +473,6 @@ admin_dbus_malloc_untrace(DBusMessageIter *args,
 	gsh_dbus_status_reply(&iter, success, errormsg);
 	return success;
 }
-
-static struct gsh_dbus_method method_malloc_trace = {
-	.name = "malloc_trace",
-	.method = admin_dbus_malloc_trace,
-	.args = {{ .name = "tracefile",
-		   .type = "s",
-		   .direction = "in"},
-		 STATUS_REPLY,
-		 END_ARG_LIST}
-};
 
 static struct gsh_dbus_method method_malloc_untrace = {
 	.name = "malloc_untrace",
@@ -619,6 +620,10 @@ static struct gsh_dbus_method *admin_methods[] = {
 	&method_purge_idmapper_cache,
 	&method_malloc_trace,
 	&method_malloc_untrace,
+	&method_trim_enable,
+	&method_trim_disable,
+	&method_trim_call,
+	&method_trim_status,
 	NULL
 };
 

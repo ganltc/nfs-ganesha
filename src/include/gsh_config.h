@@ -445,6 +445,7 @@ typedef struct nfs_core_param {
 		nfs3_complete_read.
 		Defaults to true and settable by Getattrs_In_Complete_Read. */
 	bool getattrs_in_complete_read;
+	bool enable_trim; /* Enable malloc trim */
 } nfs_core_parameter_t;
 
 /** @} */
