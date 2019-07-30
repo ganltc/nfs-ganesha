@@ -830,20 +830,18 @@ class GlobalStats(Report):
         report_key_value(self.result[3], report)
 
     def __str__(self):
+        # Note that CES framework uses this interface for monitoring NFS health.
+        # Do not make any changes for this.
         output = ""
         if not self.success:
             return "No NFS activity, GANESHA RESPONSE STATUS: " + self.status
         if self.status != "OK":
             output += self.status + "\n"
-        self.starttime = self.timestamp[0] + self.timestamp[1] / 1e9
-        self.duration = self.curtime - self.starttime
-        output += ("Global Stats \n" +
-                   "Stats collected since: " + time.ctime(self.timestamp[0]) + str(self.timestamp[1]) + " nsecs" +
-                   "\nDuration: " + "%.10f" % self.duration + " seconds" +
-                   "\nTotal NFSv3 ops: " + str(self.nfsv3_total) +
-                   "\nTotal NFSv4.0 ops: " + str(self.nfsv40_total) +
-                   "\nTotal NFSv4.1 ops: " + str(self.nfsv41_total) +
-                   "\nTotal NFSv4.2 ops: " + str(self.nfsv42_total))
+        output += ( "Timestamp: " + time.ctime(self.timestamp[0]) + str(self.timestamp[1]) + " nsecs" +
+                "\nTotal NFSv3 ops: " + str(self.nfsv3_total) +
+                "\nTotal NFSv4.0 ops: " + str(self.nfsv40_total) +
+                "\nTotal NFSv4.1 ops: " + str(self.nfsv41_total) +
+                "\nTotal NFSv4.2 ops: " + str(self.nfsv42_total))
         return output
 
 class InodeStats(Report):
