@@ -235,7 +235,7 @@ static struct config_item core_params[] = {
 		       nfs_core_param, rpc.max_recv_buffer_size),
 	CONF_ITEM_UI32("rpc_ioq_thrdmin", 2, 1024*128, 2,
 		       nfs_core_param, rpc.ioq_thrd_min),
-	CONF_ITEM_UI32("RPC_Ioq_ThrdMax", 2, 1024*128, 200,
+	CONF_ITEM_UI32("RPC_Ioq_ThrdMax", 2, 1024*128, 512,
 		       nfs_core_param, rpc.ioq_thrd_max),
 	CONF_ITEM_UI32("RPC_GSS_Npart", 1, 1021, 13,
 		       nfs_core_param, rpc.gss.ctx_hash_partitions),
