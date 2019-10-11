@@ -202,13 +202,14 @@ static size_t get_current_rss(void)
 	static long page_size;
 	int rc, fd;
 	char buf[1024];
-	long vsize, rss;
+	long vsize, rss = 0;
 
 	if (page_size == 0) {
 		page_size = sysconf(_SC_PAGESIZE);
 		if (page_size <= 0) {
 			LogEvent(COMPONENT_MEMLEAKS,
 				 "_SC_PAGESIZE failed, %d", errno);
+			return 0;
 		}
 	}
 
@@ -217,13 +218,14 @@ static size_t get_current_rss(void)
 		return 0;
 	rc = read(fd, buf, sizeof(buf) - 1);
 	if (rc < 0)
-		return 0;
+		goto out;
 
 	buf[rc] = '\0';
 	rc = sscanf(buf, "%ld %ld", &vsize, &rss);
-	if (rc != 2)
-		return 0;
+	/* after sscanf if rc != 2, then rss would remain 0 */
 
+out:
+	close(fd);
 	return ((uint64_t)rss * page_size) / (1024 * 1024);
 }
 
