@@ -365,9 +365,13 @@ int nfs3_readdirplus(nfs_arg_t *arg, struct svc_req *req, nfs_res_t *res)
 	if (dir_entry)
 		cache_inode_put(dir_entry);
 
-	if (((res->res_readdir3.status != NFS3_OK) || (rc != NFS_REQ_OK))
-	    && (tracker.entries != NULL))
-		free_entryplus3s(tracker.entries);
+	/* Deallocate memory in the event of an error */
+	if (((res->res_readdir3.status != NFS3_OK) || (rc != NFS_REQ_OK) ||
+	    ((num_entries == 0) && (cookie > 1))) &&
+	    (tracker.entries != NULL)) {
+		free_entry3s(tracker.entries);
+		resok->reply.entries = NULL;
+	}
 
 	return rc;
 }				/* nfs3_readdirplus */
