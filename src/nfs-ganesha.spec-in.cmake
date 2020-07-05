@@ -10,6 +10,13 @@ Requires: sles-release >= 12
 BuildRequires: openSUSE-release
 Requires: openSUSE-release
 %endif
+
+%if (0%{?sle_version} >= 150000)
+%define dist .sles15
+%else
+%define dist .sles12
+%endif
+
 %endif
 
 # Conditionally enable some FSALs, disable others.
@@ -233,13 +240,13 @@ Group: Applications/System
 Requires:       dbus-python, pygobject2, pyparsing
 BuildRequires:  python-devel
 %else
-Requires:	python3-gobject, python3-pyparsing
+Requires:	python3-dbus, python3-gobject, python3-pyparsing
+Requires:       gpfs.nfs-ganesha = %{version}-%{release}, python3
 BuildRequires:  python3-devel
-%if ( 0%{?suse_version} )
-Requires:	dbus-1-python
-%else
-Requires:	python3-dbus
-%endif
+%if (0%{?suse_version} && 0%{?sle_version} >= 150000)
+Requires:	python3-dbus-python, python3-gobject, python3-pyparsing
+Requires: 	gpfs.nfs-ganesha = %{version}-%{release}, python3
+BuildRequires:  python3-devel
 %endif
 
 %if %{with gui_utils}
@@ -453,6 +460,9 @@ cmake .	-DCMAKE_BUILD_TYPE=Debug			\
 	-DRPCBIND=%{use_rpcbind}			\
 	-D_MSPAC_SUPPORT=%{use_mspac_support}		\
 	-DSANITIZE_ADDRESS=%{use_sanitize_address}	\
+%if (0%{?suse_version} && 0%{?sle_version} >= 150000)
+	-DKRB5_PREFIX=/usr/lib/mit			\
+%endif
 %if %{with jemalloc}
 	-DALLOCATOR=jemalloc
 %endif
@@ -531,13 +541,8 @@ install -m 644 config_samples/gpfs.ganesha.exports.conf	%{buildroot}%{_sysconfdi
 
 make DESTDIR=%{buildroot} install
 
-%if ( 0%{?rhel} && 0%{?rhel} < 8 )
-rm -f %{buildroot}/%{python_sitelib}/gpfs*
-rm -f %{buildroot}/%{python_sitelib}/__init__.*
-%else
 rm -f %{buildroot}/%{python3_sitelib}/gpfs*
 rm -f %{buildroot}/%{python3_sitelib}/__init__.*
-%endif
 
 %post
 %if ( 0%{?suse_version} )
@@ -770,6 +775,7 @@ exit 0
 %exclude %{_bindir}/export_stats_9pOps
 %endif
 %endif
+
 %{_bindir}/fake_recall
 %{_bindir}/get_clientids
 %{_bindir}/grace_period
