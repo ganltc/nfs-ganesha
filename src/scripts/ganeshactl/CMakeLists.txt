@@ -22,6 +22,12 @@
 # Building and packaging DBUS scripts for ganesha
 
 # Python was tested for in top level
+if (USE_PYTHON2)
+    find_program(PYTHON NAMES "python2")
+else()
+    find_program(PYTHON NAMES "python3")
+endif()
+
 
 # PyQT based class modules
 set(GANESHA_BASE_SRCS

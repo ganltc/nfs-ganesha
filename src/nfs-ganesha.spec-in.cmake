@@ -578,6 +578,7 @@ rm -f %{buildroot}/%{python2_sitelib}/__init__.*
 %else
 rm -f %{buildroot}/%{python3_sitelib}/gpfs*
 rm -f %{buildroot}/%{python3_sitelib}/__init__.*
+%endif
 
 %post
 %if ( 0%{?suse_version} )
@@ -792,13 +793,14 @@ exit 0
 
 %if %{with utils}
 %files utils
-%if ( 0%{?rhel} && 0%{?rhel} < 8 )
-%{python_sitelib}/Ganesha/*
-%{python_sitelib}/ganeshactl-*-info
+%if (0%{?rhel} && 0%{?rhel} < 8)
+%{python2_sitelib}/Ganesha/*
+%{python2_sitelib}/ganeshactl-*-info
 %else
 %{python3_sitelib}/Ganesha/*
 %{python3_sitelib}/ganeshactl-*-info
 %endif
+
 %if %{with gui_utils}
 %{_bindir}/ganesha-admin
 %{_bindir}/manage_clients
