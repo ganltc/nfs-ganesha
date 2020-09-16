@@ -542,8 +542,9 @@ cmake .	-DCMAKE_BUILD_TYPE=Debug			\
 	-DRADOS_URLS=%{use_rados_urls}			\
 	-DUSE_FSAL_VFS=ON				\
 	-DUSE_FSAL_PROXY_V4=ON				\
+	-DUSE_FSAL_PROXY=OFF				\
 	-DUSE_DBUS=ON					\
-	-DUSE_9P=%{use_9P}				\
+	-DUSE_9P=OFF					\
 	-DDISTNAME_HAS_GIT_DATA=OFF			\
 	-DUSE_MAN_PAGE=%{use_man_page}                  \
 	-DRPCBIND=%{use_rpcbind}			\
@@ -567,11 +568,6 @@ cmake .	-DCMAKE_BUILD_TYPE=Debug			\
 
 make %{?_smp_mflags} || make %{?_smp_mflags} || make
 
-%if ( 0%{?fedora} >= 30 || 0%{?rhel} >= 8 )
-make -C selinux -f /usr/share/selinux/devel/Makefile ganesha.pp
-pushd selinux && bzip2 -9 ganesha.pp && popd
-%endif
-
 %install
 mkdir -p %{buildroot}%{_sysconfdir}/ganesha/
 mkdir -p %{buildroot}%{_sysconfdir}/dbus-1/system.d
@@ -588,7 +584,6 @@ install -m 755 scripts/nfs-ganesha-config.sh %{buildroot}%{_libexecdir}/ganesha
 %if %{with 9P}
 install -m 755 tools/mount.9P	%{buildroot}%{_sbindir}/mount.9P
 %endif
-
 install -m 644 config_samples/vfs.conf %{buildroot}%{_sysconfdir}/ganesha
 
 mkdir -p %{buildroot}%{_unitdir}
