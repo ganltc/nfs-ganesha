@@ -212,6 +212,16 @@ int nfs3_write(nfs_arg_t *arg, struct svc_req *req, nfs_res_t *res)
 		nfs_SetWccData(NULL, obj,
 			       &res->res_write3.WRITE3res_u.resfail.file_wcc);
 		rc = NFS_REQ_OK;
+		/* How do we commit data ? */
+		if (sync)
+			res->res_write3.WRITE3res_u.resok.committed = FILE_SYNC;
+		else
+			res->res_write3.WRITE3res_u.resok.committed = UNSTABLE;
+
+		/* Set the write verifier */
+		memcpy(res->res_write3.WRITE3res_u.resok.verf,
+		       NFS3_write_verifier,
+		       sizeof(writeverf3));
 		goto out;
 	}
 
