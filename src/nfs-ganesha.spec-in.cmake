@@ -117,7 +117,6 @@ BuildRequires:	cmake
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	pkgconfig
-BuildRequires:	userspace-rcu-devel
 BuildRequires:	krb5-devel
 %if %{with rados_recov} || %{with rados_urls}
 BuildRequires: librados-devel >= 0.61
@@ -135,6 +134,12 @@ Requires:	dbus-1
 %else
 BuildRequires:	dbus-devel
 Requires:	dbus
+%endif
+
+%if ( 0%{?suse_version} )
+BuildRequires:  liburcu-devel
+%else
+BuildRequires: userspace-rcu-devel
 %endif
 
 %if ( 0%{?suse_version} )
