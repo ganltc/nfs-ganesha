@@ -700,7 +700,7 @@ static enum xprt_stat nfs_rpc_process_request(request_data_t *reqdata)
 		"nfs_rpc_process_request-start");
 #endif
 
-	LogFullDebug(COMPONENT_DISPATCH,
+	LogEvent(COMPONENT_DISPATCH,
 		     "About to authenticate Prog=%" PRIu32
 		     ", vers=%" PRIu32
 		     ", proc=%" PRIu32
@@ -830,7 +830,7 @@ static enum xprt_stat nfs_rpc_process_request(request_data_t *reqdata)
 		/* Set the Client IP for this thread */
 		SetClientIP(op_ctx->client->hostaddr_str);
 		client_ip = op_ctx->client->hostaddr_str;
-		LogDebug(COMPONENT_DISPATCH,
+		LogEvent(COMPONENT_DISPATCH,
 			 "Request from %s for Program %" PRIu32
 			 ", Version %" PRIu32
 			 ", Function %" PRIu32
@@ -1386,7 +1386,7 @@ static enum xprt_stat nfs_rpc_process_request(request_data_t *reqdata)
 					reqdesc->xdr_encode_func;
 		xprt_rc = svc_sendreply(&reqdata->r_u.req.svc);
 		if (xprt_rc >= XPRT_DIED) {
-			LogDebug(COMPONENT_DISPATCH,
+			LogEvent(COMPONENT_DISPATCH,
 				 "NFS DISPATCHER: FAILURE: Error while calling svc_sendreply on a new request. rpcxid=%"
 				 PRIu32
 				 " socket=%d function:%s client:%s program:%"
@@ -1402,6 +1402,7 @@ static enum xprt_stat nfs_rpc_process_request(request_data_t *reqdata)
 				 reqdata->r_u.req.svc.rq_msg.cb_vers,
 				 reqdata->r_u.req.svc.rq_msg.cb_proc,
 				 errno);
+	
 			SVC_DESTROY(xprt);
 			/* We failed to send the response, but the
 			 * request is complete, so we should mark

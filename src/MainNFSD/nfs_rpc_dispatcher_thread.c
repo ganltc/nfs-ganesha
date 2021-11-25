@@ -238,6 +238,7 @@ static void close_rpc_fd(void)
 {
 	protos p;
 
+	LogEvent(COMPONENT_DISPATCH, "EFIX_1 : close_rpc_fd called!!");
 	for (p = P_NFS; p < P_COUNT; p++) {
 		if (udp_socket[p] != -1)
 			close(udp_socket[p]);
@@ -313,7 +314,7 @@ const svc_xprt_fun_t udp_dispatch[] = {
 
 static enum xprt_stat nfs_rpc_dispatch_tcp_NFS(SVCXPRT *xprt)
 {
-	LogFullDebug(COMPONENT_DISPATCH,
+	LogEvent(COMPONENT_DISPATCH,
 		     "NFS TCP request on SVCXPRT %p fd %d",
 		     xprt, xprt->xp_fd);
 	xprt->xp_dispatch.process_cb = nfs_rpc_valid_NFS;
@@ -1331,7 +1332,7 @@ static enum xprt_stat nfs_rpc_decode_request(SVCXPRT *xprt, XDR *xdrs)
 			 "missing xdrs!");
 		return XPRT_DIED;
 	}
-	LogDebug(COMPONENT_DISPATCH,
+	LogEvent(COMPONENT_DISPATCH,
 		 "%p fd %d context %p",
 		 xprt, xprt->xp_fd, xdrs);
 

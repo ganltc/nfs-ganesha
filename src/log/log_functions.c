@@ -484,6 +484,8 @@ static void SetNTIRPCLogLevel(int level_to_set)
 	case NIV_EVENT:
 		ntirpc_pp.debug_flags = TIRPC_DEBUG_FLAG_ERROR |
 					TIRPC_DEBUG_FLAG_WARN |
+					TIRPC_DEBUG_FLAG_EPOLL |
+					TIRPC_DEBUG_FLAG_REFCNT |
 					TIRPC_DEBUG_FLAG_EVENT;
 		break;
 	case NIV_DEBUG:
@@ -1722,8 +1724,8 @@ void rpc_warnx(char *fmt, ...)
 {
 	va_list ap;
 
-	if (component_log_level[COMPONENT_TIRPC] < NIV_DEBUG)
-		return;
+/*	if (component_log_level[COMPONENT_TIRPC] < NIV_DEBUG)
+		return; */
 
 	va_start(ap, fmt);
 
