@@ -772,6 +772,10 @@ bool principal2uid(char *principal, uid_t *uid, gid_t *gid)
 	success =
 	    idmapper_lookup_by_uname(&princbuff, &gss_uid, &gss_gidres, true);
 
+        LogInfo(COMPONENT_IDMAPPER,
+                       "++++++++++++ idmapper_lookup_by_uname  %s to Sucess_value = %d ",
+                        principal, success);
+
 	/* We do need uid and gid. If gid is not in the cache, treat it as a
 	 * failure.
 	 */
@@ -779,6 +783,10 @@ bool principal2uid(char *principal, uid_t *uid, gid_t *gid)
 		gss_gid = *gss_gidres;
 	else
 		success = false;
+                LogInfo(COMPONENT_IDMAPPER,
+                           "++++++++++++ idmapper_lookup_by_uname  Loop2  gss_uid = %d   gss_gid = %d  success = %d",
+                            gss_uid, gss_gid , success);
+
 	PTHREAD_RWLOCK_unlock(&idmapper_user_lock);
 	if (unlikely(!success)) {
 		if ((princbuff.len >= 4)
@@ -802,6 +810,10 @@ bool principal2uid(char *principal, uid_t *uid, gid_t *gid)
 		   from gss creds */
 		rc = nfs4_gss_princ_to_ids("krb5", principal, &gss_uid,
 					   &gss_gid);
+                LogInfo(COMPONENT_IDMAPPER,
+                       "++++++++++++ nfs4_gss_princ_to_ids %s to  rc = %d Loop3  gss_uid = %d   gss_gid = %d ",
+                        principal, rc, gss_uid ,gss_gid);
+
 		if (rc) {
 #ifdef _MSPAC_SUPPORT
 			bool found_uid = false;
@@ -882,6 +894,9 @@ bool principal2uid(char *principal, uid_t *uid, gid_t *gid)
 			if ((found_uid == true) && (found_gid == true))
 				goto principal_found;
 #endif
+                        LogInfo(COMPONENT_IDMAPPER,
+                                "++++++++++++ Loop 2 called  %s to  %d",
+                                principal, rc);
 
 			return false;
 		}

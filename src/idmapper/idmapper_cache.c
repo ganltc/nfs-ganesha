@@ -498,11 +498,17 @@ bool idmapper_lookup_by_uname(const struct gsh_buffdesc *name, uid_t *uid,
 	};
 	struct avltree_node *found_node = avltree_lookup(&prototype.uname_node,
 							 &uname_tree);
+        LogInfo(COMPONENT_IDMAPPER,
+        	 "++++++++++++ idmapper_cache  Loop1 called  Name : %s ", ( char *)&prototype.uname.addr);
+
 	struct cache_user *found_user;
 	void **cache_slot;
 
 	if (unlikely(!found_node))
 		return false;
+
+        LogInfo(COMPONENT_IDMAPPER,
+                  "++++++++++++ idmapper_lookup_by_uname  Loop1 called  Name : %s ", ( char *)&prototype.uname.addr);
 
 	found_user =
 	    avltree_container_of(found_node, struct cache_user, uname_node);
