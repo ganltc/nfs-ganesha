@@ -154,6 +154,10 @@ bool nfs_compare_clientcred(nfs_client_cred_t *cred1,
 			cred1->auth_union.auth_gss.gd->ctx,
 			&cred1_cred_name, NULL, NULL, NULL, NULL, NULL, NULL);
 
+                LogInfo(COMPONENT_DISPATCH,
+                                        "+++++++cred1_cred_name=%s and maj_stat=%d",
+                                         (char *)cred1_cred_name,maj_stat);
+
 		if (maj_stat != GSS_S_COMPLETE &&
 		    maj_stat != GSS_S_CONTEXT_EXPIRED)
 			return false;
@@ -161,6 +165,10 @@ bool nfs_compare_clientcred(nfs_client_cred_t *cred1,
 		 maj_stat = gss_inquire_context(&min_stat,
 			cred2->auth_union.auth_gss.gd->ctx,
 			&cred2_cred_name, NULL, NULL, NULL, NULL, NULL, NULL);
+
+                LogInfo(COMPONENT_DISPATCH,
+                                        "+++++++cred2_cred_name=%s and maj_stat=%d",
+                                         (char *)cred2_cred_name,maj_stat);
 
 		if (maj_stat != GSS_S_COMPLETE &&
 		    maj_stat != GSS_S_CONTEXT_EXPIRED) {
@@ -170,6 +178,10 @@ bool nfs_compare_clientcred(nfs_client_cred_t *cred1,
 
 		maj_stat = gss_compare_name(&min_stat, cred1_cred_name,
 					    cred2_cred_name, &status);
+
+                LogInfo(COMPONENT_DISPATCH,
+                                        "+++++++  maj_stat=%d Status= %d ", maj_stat , status);
+
 		/* release the names */
 		gss_release_name(&min_stat, &cred1_cred_name);
 		gss_release_name(&min_stat, &cred2_cred_name);
