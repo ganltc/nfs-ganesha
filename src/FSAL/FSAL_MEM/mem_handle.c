@@ -344,6 +344,8 @@ mem_readdir_seekloc(struct mem_fsal_obj_handle *dir, fsal_cookie_t seekloc)
 	struct avltree_node *node;
 	struct mem_dirent key;
 
+	memset(&key, 0, sizeof(key));
+
 	if (!seekloc) {
 		/* Start from the beginning.  We walk the index tree, so always
 		 * grab from the index tree. */
