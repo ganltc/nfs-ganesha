@@ -12,6 +12,17 @@ then
 	rm -rf build
 fi
 
+DIRNAME=$(dirname $0)
+VERFILE=${DIRNAME}/GANESHA_VERSION
+
+# Read GANESHA_VERSION file
+. ${VERFILE}
+if (( $? != 0 ))
+then
+    echo "Unable to parse GANESHA_VERSION file. Aborting!!!"
+    exit 1
+fi
+
 mkdir build &&                                                             \
 cd build && 								   \
 cmake ../src -DBUILD_CONFIG=rpmbuild -DCMAKE_BUILD_TYPE=Release            \
@@ -29,6 +40,9 @@ cmake ../src -DBUILD_CONFIG=rpmbuild -DCMAKE_BUILD_TYPE=Release            \
 	-DUSE_FSAL_PANFS=OFF						   \
 	-DUSE_FSAL_GLUSTER=OFF						   \
 	-DUSE_FSAL_PROXY=OFF						   \
+	-DGANESHA_MAJOR_VERSION=${GANESHA_MAJOR_VERSION}		   \
+	-DGANESHA_MINOR_VERSION=${GANESHA_MINOR_VERSION}		   \
+	-DGANESHA_TAG=${GANESHA_TAG}					   \
 	-DUSE_FSAL_GPFS=ON  &&  					   \
 make dist &&                                                               \
 QA_RPATHS=2 rpmbuild -ta nfs-ganesha*.tar.gz
