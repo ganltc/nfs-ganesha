@@ -31,7 +31,6 @@ Vcs-Git: https://github.com/nfs-ganesha/nfs-ganesha.git
 Package: gpfs.nfs-ganesha
 Conflicts: nfs-ganesha
 Provides: nfs-ganesha (=2.5.3)
-Replaces: nfs-ganesha
 Architecture: any
 Depends: dbus, nfs-common, rpcbind,
          ${shlibs:Depends}, daemon
@@ -44,7 +43,6 @@ Description: nfs-ganesha is a NFS server in User Space
 Package: gpfs.nfs-ganesha-gpfs
 Conflicts: nfs-ganesha-fsal
 Provides: nfs-ganesha-fsal
-Replaces: nfs-ganesha-fsal
 Multi-Arch: same
 Architecture: any
 Section: libs
@@ -59,7 +57,6 @@ Description: nfs-ganesha fsal libraries
 Package: gpfs.python-nfs-ganesha
 Conflicts: python-nfs-ganesha
 Provides: python-nfs-ganesha, ${python:Provides}
-Replaces: python-nfs-ganesha
 Pre-Depends: ${misc:Pre-Depends}
 Architecture: all
 Section: python
@@ -78,7 +75,6 @@ Description: Python bindings for nfs-ganesha
 Package: gpfs.nfs-ganesha-doc
 Conflicts: nfs-ganesha-doc
 Provides: nfs-ganesha-doc
-Replaces: nfs-ganesha-doc
 Architecture: all
 Section: doc
 Description: Documentation for nfs-ganesha
@@ -92,7 +88,6 @@ Description: Documentation for nfs-ganesha
 Package: gpfs.nfs-ganesha-dbgsym
 Conflicts: nfs-ganesha-dbgsym
 Provides: nfs-ganesha-dbgsym
-Replaces: nfs-ganesha-dbgsym
 Architecture: any
 Section: debug
 Priority: extra
