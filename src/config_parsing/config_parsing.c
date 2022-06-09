@@ -1380,19 +1380,30 @@ static bool proc_block(struct config_node *node,
 		err_type->errors++;
 		return false;
 	}
-	LogFullDebug(COMPONENT_CONFIG,
-		     "------ At (%s:%d): do_block_init %s",
-		     node->filename,
-		     node->linenumber,
-		     item->name);
-	if (!do_block_init(node, item->u.blk.params,
-			   param_struct, err_type)) {
-		config_proc_error(node, err_type,
-				  "Could not initialize parameters for %s",
-				  item->name);
-		err_type->init = true;
-		goto err_out;
-	}
+
+	/*
+	 * cacheinode and mdcache block uses common variable to read
+	 * configfile. cacheinode block is old style and will be removed
+	 * next release. mdcache block is new stanza and all cacheinode
+	 * config parameter will be moved to mdcache block.
+	 * The common variable is already initialized during mdcache block.
+	 * So skipping variable initialization in cacheinode block read.
+	 */
+        if  (item->name!= NULL && strcmp(item->name, "CacheInode") != 0 ) {
+                LogFullDebug(COMPONENT_CONFIG,
+                             "------ At (%s:%d): do_block_init %s",
+                             node->filename,
+                             node->linenumber,
+                             item->name);
+                if (!do_block_init(node, item->u.blk.params,
+                                   param_struct, err_type)) {
+                        config_proc_error(node, err_type,
+				"Could not initialize parameters for %s",
+				item->name);
+                        err_type->init = true;
+                        goto err_out;
+                }
+        }
 	if (item->u.blk.display != NULL)
 		item->u.blk.display("DEFAULTS", node,
 				      link_mem, param_struct);
@@ -2070,13 +2081,24 @@ int load_config_from_parse(config_file_t config,
 			param : conf_blk->blk_desc.u.blk.init((void *)~0UL,
 							      NULL);
 		assert(blk_mem != NULL);
-		if (!do_block_init(&tree->root,
-				   conf_blk->blk_desc.u.blk.params,
-				   blk_mem, err_type)) {
-			config_proc_error(&tree->root, err_type,
-					  "Could not initialize defaults for block %s",
-					  blkname);
-			err_type->init = true;
+		/*
+		 * cacheinode and mdcache block uses common variable to read
+		 * configfile. cacheinode block is old style and will be
+		 * removed next release. mdcache block is new stanza and all
+		 * cacheinode config parameter will be moved to mdcache.
+		 * The common variable is initialized in mdcache block read.
+		 * So skipping variable initialization in cacheinode block.
+		 */
+		if(conf_blk->blk_desc.name != NULL &&
+		   strcmp(conf_blk->blk_desc.name, "CacheInode") != 0) {
+			if (!do_block_init(&tree->root,
+				conf_blk->blk_desc.u.blk.params,
+				blk_mem, err_type)) {
+				config_proc_error(&tree->root, err_type,
+				  "Could not initialize defaults for block %s",
+				   blkname);
+				err_type->init = true;
+			}
 		}
 	}
 	if (err_type->errors > prev_errs) {
