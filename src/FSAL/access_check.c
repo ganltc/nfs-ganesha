@@ -29,9 +29,13 @@ static bool fsal_check_ace_owner(uid_t uid, struct user_cred *creds)
 static bool fsal_check_ace_group(gid_t gid, struct user_cred *creds)
 {
 	int i;
-
+	LogFullDebug(COMPONENT_NFS_V4_ACL, "creds->caller_gid=%u", creds->caller_gid);
 	if (creds->caller_gid == gid)
 		return true;
+
+	for (i = 0; i < creds->caller_glen; i++) {
+	LogFullDebug(COMPONENT_NFS_V4_ACL, "creds->caller_garray[%d]=%u", i,creds->caller_garray[i]);
+	}
 
 	for (i = 0; i < creds->caller_glen; i++) {
 		if (creds->caller_garray[i] == gid)

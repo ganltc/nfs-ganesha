@@ -280,10 +280,13 @@ bool name2grp(const struct gsh_buffdesc *name, struct group_data **gdata)
 
 	PTHREAD_RWLOCK_rdlock(&uid2grp_user_lock);
 	success = uid2grp_lookup_by_uname(name, &uid, gdata);
-
+	LogFullDebug(COMPONENT_IDMAPPER,
+			"name2grp return success=%d", success);
 	/* Handle common case first */
 	if (success && !uid2grp_expired(*gdata)) {
 		uid2grp_hold_group_data(*gdata);
+		LogFullDebug(COMPONENT_IDMAPPER,
+			"uid2grp_expired returned false");
 		PTHREAD_RWLOCK_unlock(&uid2grp_user_lock);
 		return success;
 	}
@@ -293,6 +296,8 @@ bool name2grp(const struct gsh_buffdesc *name, struct group_data **gdata)
 		/* Cache entry is expired */
 		PTHREAD_RWLOCK_wrlock(&uid2grp_user_lock);
 		uid2grp_remove_by_uname(name);
+		LogFullDebug(COMPONENT_IDMAPPER,
+			"uid2grp_remove_by_uname");
 		PTHREAD_RWLOCK_unlock(&uid2grp_user_lock);
 	}
 
@@ -301,6 +306,8 @@ bool name2grp(const struct gsh_buffdesc *name, struct group_data **gdata)
 	if (*gdata)
 		uid2grp_add_user(*gdata);
 	success = uid2grp_lookup_by_uname(name, &uid, gdata);
+	LogFullDebug(COMPONENT_IDMAPPER,
+			"uid2grp_lookup_by_uname returned success=%d",success);
 	if (success)
 		uid2grp_hold_group_data(*gdata);
 	PTHREAD_RWLOCK_unlock(&uid2grp_user_lock);
@@ -322,10 +329,13 @@ bool uid2grp(uid_t uid, struct group_data **gdata)
 
 	PTHREAD_RWLOCK_rdlock(&uid2grp_user_lock);
 	success = uid2grp_lookup_by_uid(uid, gdata);
-
+	LogFullDebug(COMPONENT_IDMAPPER,
+		"uid2grp uid2grp_lookup_by_uname return success=%d", success);
 	/* Handle common case first */
 	if (success && !uid2grp_expired(*gdata)) {
 		uid2grp_hold_group_data(*gdata);
+		LogFullDebug(COMPONENT_IDMAPPER,
+			"after uid2grp_hold_group_data");
 		PTHREAD_RWLOCK_unlock(&uid2grp_user_lock);
 		return success;
 	}
@@ -335,6 +345,8 @@ bool uid2grp(uid_t uid, struct group_data **gdata)
 		/* Cache entry is expired */
 		PTHREAD_RWLOCK_wrlock(&uid2grp_user_lock);
 		uid2grp_remove_by_uid(uid);
+		LogFullDebug(COMPONENT_IDMAPPER,
+			"after uid2grp_remove_by_uid");
 		PTHREAD_RWLOCK_unlock(&uid2grp_user_lock);
 	}
 
@@ -343,6 +355,7 @@ bool uid2grp(uid_t uid, struct group_data **gdata)
 	if (*gdata)
 		uid2grp_add_user(*gdata);
 	success = uid2grp_lookup_by_uid(uid, gdata);
+	LogFullDebug(COMPONENT_IDMAPPER,"uid2grp_lookup_by_uid returned success=%d",success);
 	if (success)
 		uid2grp_hold_group_data(*gdata);
 	PTHREAD_RWLOCK_unlock(&uid2grp_user_lock);

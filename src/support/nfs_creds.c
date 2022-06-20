@@ -429,15 +429,22 @@ nfsstat4 nfs_req_creds(struct svc_req *req)
 				"Attempt to fetch managed_gids failed");
 			return NFS4ERR_ACCESS;
 		}
-
+		LogFullDebug(COMPONENT_NFS_V4_ACL,"MANAGED_GIDS=true,fetched group data");
 		op_ctx->creds->caller_glen = op_ctx->caller_gdata->nbgroups;
 		op_ctx->creds->caller_garray = op_ctx->caller_gdata->groups;
+
 	} else {
+		LogFullDebug(COMPONENT_NFS_V4_ACL,"MANAGED_GIDS=false,used original_creds");
 		/* Use the original_creds group list */
 		op_ctx->creds->caller_glen   =
 					op_ctx->original_creds.caller_glen;
 		op_ctx->creds->caller_garray =
 					op_ctx->original_creds.caller_garray;
+	}
+
+	for (i = 0; i < op_ctx->creds->caller_glen; i++) {
+		LogFullDebug(COMPONENT_NFS_V4_ACL,
+		"op_ctx->creds->caller_garray[%d]=%u", i, op_ctx->creds->caller_garray[i]);
 	}
 
 	/****************************************************************/
