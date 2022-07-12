@@ -1801,12 +1801,12 @@ void process_blocked_lock_upcall(state_block_data_t *block_data)
 {
 	state_lock_entry_t *lock_entry = block_data->sbd_lock_entry;
 
-	lock_entry_inc_ref(lock_entry);
 	STATELOCK_wrlock(lock_entry->sle_obj->state_hdl);
 
 	try_to_grant_lock(lock_entry);
 
 	STATELOCK_unlock(lock_entry->sle_obj->state_hdl);
+
 	lock_entry_dec_ref(lock_entry);
 }
 
@@ -3439,6 +3439,13 @@ void blocked_lock_polling(struct fridgethr_context *ctx)
 		if (state_block_schedule(pblock) != STATE_SUCCESS) {
 			LogMajor(COMPONENT_STATE,
 				 "Unable to schedule lock notification.");
+		} else {
+			/* Since we scheduled this block to be handled in
+			 * another thread, we need to hold a reference on the
+			 * lock entry to preventthe entry from release before
+			 * we are done processing.
+			 */
+			lock_entry_inc_ref(found_entry);
 		}
 
 		LogEntry("Blocked Lock found", found_entry);
@@ -3495,6 +3502,13 @@ static void find_blocked_lock_upcall(struct fsal_obj_handle *obj, void *owner,
 		if (state_block_schedule(pblock) != STATE_SUCCESS) {
 			LogMajor(COMPONENT_STATE,
 				 "Unable to schedule lock notification.");
+		} else {
+			/* Since we scheduled this block to be handled in
+			 * another thread, we need to hold a reference on the
+			 * lock entry to preventthe entry from release before
+			 * we are done processing.
+			 */
+			lock_entry_inc_ref(found_entry);
 		}
 
 		LogEntry("Blocked Lock found", found_entry);
