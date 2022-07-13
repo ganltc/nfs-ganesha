@@ -2669,6 +2669,13 @@ state_status_t state_lock(struct fsal_obj_handle *obj,
 			block_data->sbd_block_type = STATE_BLOCK_INTERNAL;
 		}
 
+		if (glist_empty(&obj->state_hdl->file.lock_list)) {
+			/* List was empty, get ref for file hanle obj.
+			 * obj ref released in unlock if list is empty.
+			 */
+			obj->obj_ops->get_ref(obj);
+		}
+
 		/* Insert entry into lock list */
 		LogEntry("FSAL block for", found_entry);
 
