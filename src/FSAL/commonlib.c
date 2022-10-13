@@ -1291,7 +1291,8 @@ int populate_posix_file_systems(bool force)
 		 * hangs!
 		 */
 		if (strcasecmp(mnt->mnt_type, "nfs") == 0 ||
-		    strcasecmp(mnt->mnt_type, "autofs") == 0) {
+		    strcasecmp(mnt->mnt_type, "autofs") == 0 ||
+		    strcasecmp(mnt->mnt_type, "tmpfs") == 0) {
 			LogDebug(COMPONENT_FSAL,
 				 "Ignoring %s because type %s",
 				 mnt->mnt_dir,
