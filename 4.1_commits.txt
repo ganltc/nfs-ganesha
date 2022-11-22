@@ -1,0 +1,146 @@
+913798832 prabhu.murugeshan@ibm.com IBM_Only: Removed Replaces option in debian control File.
+
+856bcd9f7 manish.laddha@ibm.com IBM-Only: Fixed GPFS create export issue during claim_posix_filesystem ==> not required for 4.0, not picked, check EOF
+2ae9882c0 prabhu.murugeshan@ibm.com [IBM-ONLY] changed enable_v3_fh_for_v4 default value to true
+
+0efec279b prabhu.murugeshan@ibm.com [IBM-Only] Skip mdcache_param init in cacheinode block read. => skipping as upstream fixed in a different way, to check functionality
+37b669219 prabhu.murugeshan@ibm.com IBM-Only: Fixed smb version in debian/rules to fix U22 upgrade issue
+
+07c12d707 prabhu.murugeshan@ibm.com IBM-Only: Fixed ganesha_mgr version issue and reverted python util.
+6fc4b5f49 prabhu.murugeshan@ibm.com IBM-Only: use debhelper if dh-systemd not installed.
+49f8ef503 prabhu.murugeshan@ibm.com IBM-Only : Changed build script to use GANESHA_VERSION file
+f2bfb87a0 prabhu.murugeshan@ibm.com IBM-Only: Fix for compilation issue in GCC11. => Push to upstream
+59c624cf0 alomalli@in.ibm.com IBM-only: Separate debian packages based on Ubuntu Codename
+ac1cd1be6 prabhu.murugeshan@ibm.com Revert "IBM-only: Fix ganesha_stats exceptions while the daemon is going down" => discarded as already in upstream
+3f06fb9f5 prabhu.murugeshan@ibm.com Revert "IBM-only: When state lock is held, set no_cleanup=true prior to calling fsal_open2(..)" => discarded as original commit not taken
+478131bf2 madhu.punjabi@in.ibm.com IBM-only: Malloc trim: Close FD before returning from get_current_rss()  => needs to checked at EOF
+3065e9e77 prabhu.murugeshan@ibm.com IBM-only:ganesha_mgr:Added input validation for display export  => needs to checked at EOF
+467708be6 anuradha.lella@ibm.com IBM-only: Corrected the liburcu name for SLES.
+4ffb60625 anuradha.lella@ibm.com IBM-only : Makes the userspace-rcu lib as hard-dependancy in ganesha spec file.
+5c4a62d74 anuradha.lella@ibm.com IBM-only: Fixed the installation issues for ubuntu and SLES.
+f3a7d8c77 yogendra.charya@ibm.com IBM-only: To support existing AFM filesets which stored NFSv3 file handles  to work with  NFSv4 mount => discarding as already there in upstream
+0162b2154 Anuradha@li-0892024c-2c4b-11b2-a85c-fe75cc3c19d4.ibm.com IBM-only: Added the support of librcu in sles and Fixed the build error. LIBURCU support in needed in 3.5 code.fixed the build error by adding the code to fix this.
+cd523d579 Anuradha@li-0892024c-2c4b-11b2-a85c-fe75cc3c19d4.ibm.com IBM-only: rpm nfs-ganesha-selinux is not needed. python3-dbus not suuported in RHEL7. => needs to checked at EOF
+170d6b4bb Anuradha@li-0892024c-2c4b-11b2-a85c-fe75cc3c19d4.ibm.com IBM-only: Replaced the dbus_append_timestamp() with gsh_dbus_append_timestamp() to resolve build error. ==> discarded as already in upstream
+94892494f Anuradha@li-0892024c-2c4b-11b2-a85c-fe75cc3c19d4.ibm.com IBM-only: Add ENV_OPTIONS to systemd nfs-ganesha service unit file for RHEL7 and ubuntu
+3a3f42b46 Anuradha@li-0892024c-2c4b-11b2-a85c-fe75cc3c19d4.ibm.com IBM-only: Revert : Revert "Rename ganesha.nfsd to gpfs.ganesha.nfsd" => needs to checked at EOF
+b8fe13db7 Anuradha@li-0892024c-2c4b-11b2-a85c-fe75cc3c19d4.ibm.com IBM-only: Replaced the dbus_status_reply() with gsh_dbus_status_reply() to resolve build error. => needs to checked at EOF
+
+5fb03046b Anuradha@li-0892024c-2c4b-11b2-a85c-fe75cc3c19d4.ibm.com IBM-only: Fixed the build error issue on Ubuntu.Added the support of libganesha_NFSD
+f6515f43b psachin@in.ibm.com IBM-only: Restore global ops output for CES
+be84071cc malahal@us.ibm.com IBM-only: "rpm: require nfs-ganesha-selinux"
+cb453ee1a malahal@us.ibm.com IBM-only: [GPFS] workaround for lookup of parent entry (DOTDOT)  => needs to checked at EOF
+b32221b1b malahal@us.ibm.com IBM-only: Build libntirpc files in nfs-ganesha base package => needs to checked at EOF
+569ebba96 nuzhat.fathima.shaik@ibm.com IBM-only: Made changes to install python dependency module python3-pyparsing along with nfs-ganesha debian package
+18853c6ca malahal@us.ibm.com IBM-only: [scale] Avoid building unneeded rpms => needs to checked at EOF
+ad5f4dfc4 nuzhat.fathima.shaik@ibm.com IBM-only: Made changes to retain the existing syntax of ganesha_mgr command in ganltc. => check in the end EOF
+11efbd530 malahal@us.ibm.com IBM-only: [Scale 5.1] use python2 with RHEL7.x/CentsOS7.x => check in the end EOF
+414cd1b78 nuzhat.fathima.shaik@ibm.com IBM-only: Made changes to display only Ganesha version with "ganesha_mgr show version" command. => discard these changes
+7ca538448 ntrishal@in.ibm.com IBM-only: Assign the correct nodeid at ganesha startup for GPFS FSAL  => Push it to upstream
+85f2a50d2 malahal@us.ibm.com IBM-only: Fix sprintf in fsal_save_ganesha_credentials => discarded as changes are already there in upstream
+db6231f6c malahal@us.ibm.com IBM-only: Fix gpfs_reopen2 to not use invalid file descriptor => Push it to upstream
+721456b56 malahal@us.ibm.com IBM-only: rpm: Spec file change for RHEL7.7 or RHEL7.8
+764aa8434 malahal@us.ibm.com IBM-only: python: remove unneeded gobject imports => discard as changes seems to be there 
+887df5f6d malahal@us.ibm.com IBM-only: [Scale 51] Changes for python3 debian packages => check in the end EOF
+b221056d2 malahal@us.ibm.com IBM-only: [Scale 51] Spec changes for python3 only and SLES15 builds
+7cb312238 malahal@us.ibm.com IBM-only: Make minimum svc worker threads configurable => discarded as changes are already there in upstream
+80905ac1f malahal@us.ibm.com IBM-only: [GPFS] Fix gpfs.ganesha.main.conf file => discarded as changes are already there in upstream
+b5a5292d8 malahal@us.ibm.com IBM-only: Remove python-qt from dependency for debian builds => check in the end EOF
+4d15e854d ntrishal@in.ibm.com IBM-only: Log levels changed for related owners => discarded as changes are already there in upstream
+2cb5d57fb psachin@in.ibm.com IBM-only: Fix Ganesha crash by sending stats  => discarded as changes are already there in upstream
+1a657a9ec malahal@us.ibm.com IBM-only: Fix closing fds started by ganesha as a client. => discarded as changes are already there in upstream
+7bd29110f dang@redhat.com IBM-only: XPRT - Drop refs on the listening XPRTs => discarded as changes are already there in upstream
+cab37c436 malahal@us.ibm.com IBM-only: Fix ganesha_stats with dbus import => discarded as changes are already there in upstream
+d9aad05dd madhu.punjabi@in.ibm.com IBM-only: When state lock is held, set no_cleanup=true prior to calling fsal_open2(..) ==> Reverted, check ibm2.7, check later
+a3fc416a7 madhu.punjabi@in.ibm.com IBM-only: Add ENV_OPTIONS in /etc/sysconfig/ganesha file to have ASAN options => check later, at EOF
+2163f363a ntrishal@in.ibm.com IBM-only: DNS related stats are added to ganesha_stats auth command => discarded as changes are already there in upstream
+8ac7dd95c malahal@us.ibm.com IBM-only: Fix malloc trim management commands => check later, at EOF
+62df9cf0a malahal@us.ibm.com IBM-only: Fix ganesha_stats exceptions while the daemon is going down => reverted, check ibm2.7, discarded, check later
+fb1c62735 malahal@us.ibm.com IBM-only: Change RPC_Max_Connections max value to UINT32_MAX
+9a5d2f6f3 psachin@in.ibm.com IBM-only: Fix typo => Discarded as changes there in upstream
+9f55f636e madhu.punjabi@in.ibm.com IBM-only: Change RPC_Ioq_ThrdMax default in config.txt to match with code
+00123acb7 madhu.punjabi@in.ibm.com IBM-only: Add LogEventLimited to trace in fsal_common_is_referral
+456004766 madhu.punjabi@in.ibm.com IBM-only: Add ENV_OPTIONS to systemd nfs-ganesha service unit file for RHEL8
+fa2da1b11 madhu.punjabi@in.ibm.com IBM-only: MDCACHE: Add config param Cache_FDs and use it in the same way as in ibm2.5 code => not taken. see eof page
+a80df535a madhu.punjabi@in.ibm.com IBM-only: Set RPC_Ioq_ThrdMax default to 512
+4d23abaf5 madhu.punjabi@in.ibm.com IBM-only: Set Grace_Period default to 90 seconds => discarded as changes are there
+b06b557ac madhu.punjabi@in.ibm.com IBM-only: init_fds_limit(): Log EVENT to print current set FD limit => push to upstream
+69b8ea134 malahal@us.ibm.com IBM-only: GPFS: fix 40 byte sized old file handles => discarded (need to confirm handle length returned by gpfs is 48 always)
+828d06872 malahal@us.ibm.com IBM-only: Remove inline comments from systd unit files => discarded
+57220af5e malahal@us.ibm.com IBM-only: Add MALLOC_ARENA_MAX to systemd nfs-ganesha service unit file => cherry-picked but final content has to be taken from ibm3.5 or upstream
+d4103856e malahal@us.ibm.com IBM-only: Malloc trim support ==> Need to be manually pick content and keep upstream usage and push to upstream
+c4721f684 malahal@us.ibm.com IBM-only: [GPFS] Handle DOTDOT lookup in .snapshots => discarded, pick from ibm2.7/later commit, to be pushed to upsteam
+74356d1d5 madhu.punjabi@in.ibm.com IBM-only: [GPFS] Change handle_size to 48 if GPFS returned handle with size 40  => discarded as gpfs never returning 40 size handle
+06e9d616c malahal@us.ibm.com IBM-only: [cmake] remove check_library_exists ==> currently discarded, debug if build fails 
+2d9d3169d madhu.punjabi@in.ibm.com IBM-only: If op_ctx not set during shutdown then log CRIT trace for an entry and not assert ==> to be discarded, check for assert in testing
+c2074451f madhu.punjabi@in.ibm.com IBM-only: Don't increase errcnt when getting obj/export fails in release_openstate() => need to be pushed to upstream
+5ccb1b897 malahal@us.ibm.com IBM-only: [GPFS] don't use Scale headers if MSPAC is disabled.
+6d8b9af64 madhu.punjabi@in.ibm.com IBM-only: Change rpc_warnx log level check from NIV_FATAL to NIV_DEBUG ==> pushed to upstream
+84a14f2aa madhu.punjabi@in.ibm.com IBM-only: Use setfsgid/setfsuid instead of setresgid/setresuid ==> need toverified and push to upstream if required
+641a62af3 malahal@us.ibm.com IBM-only: Set FD_LWMark_Percent to 0  ==> to be checked later,not cheryy-picked, final content to be picked from ibm3.5
+d00b5989f anuradha.lella@ibm.com IBM-only: Revert "Rename ganesha.nfsd to gpfs.ganesha.nfsd" ==> to be checked later, not cheryy-picked, final content to be picked from ibm3.5
+0fc67d881 psachin@in.ibm.com IBM-only: Preserve old ACLS => to be pushed to upstream
+42c128e3e malahal@us.ibm.com IBM-only: Retry communication with NSM service => need to discuss with upstream
+1145ec27d malahal@us.ibm.com IBM-only: Disable NLM SHARE requests => need to discuss with upstream
+a4a3078c3 ntrishal@in.ibm.com IBM-only: Skip sending the conflicting lock owner in the NLM TEST response ==> to be checked with knfs, if valid need to push to upstream
+d9393b459 malahal@us.ibm.com IBM-only: Disable GPFS fsal async block lock support ==> to be checked with GPFS team/Christoff, if valid need to push to upstream
+52fca78e9 malahal@us.ibm.com IBM-only: Fix Obsolotes release number in the RPM spec file.
+99cf07d5d psachin@in.ibm.com IBM-only: GPFS_FSAL: Ensure fd value is more than 2 ==> to be pushed to upstream
+ae6cb2dbf malahal@us.ibm.com IBM-only: Rename RHEL/SLES package to avoid conflict
+b5a5292d8 malahal@us.ibm.com IBM-only: Remove python-qt from dependency for debian builds => check in the end EOF
+c7a7b8f9c malahal@us.ibm.com IBM-only: Rename Ubuntu packages to avoid conflict
+cc1cad2e9 malahal@us.ibm.com IBM-only: Add ganltc/ntirpc.git submodule ==> to be discarded
+a8c83c236 malahal@us.ibm.com IBM-only: Add systemctl daemon-reload to ubuntu post install scripts.
+c42654561 malahal@us.ibm.com IBM-only: Rename ganesha.nfsd to gpfs.ganesha.nfsd  ==> to be checked later
+a00562073 malahal@us.ibm.com IBM-only: Add -C option to Ganesha daemon startup
+ffc043328 malahal@us.ibm.com IBM-only: Do not use nfs-ganesha-lock.service
+66ba8a9df malahal@us.ibm.com IBM-only: Move open_fd_count from MDCACHE to FSALs. ==> to be pushed to upstream
+d576ae31e malahal@us.ibm.com IBM-only: Set Grace_Period default to 60 seconds ==> can be discarded
+8bc946178 malahal@us.ibm.com IBM-only: Fix @LIBEXECDIR@ for debian/ubuntu
+3cfd050ec malahal@us.ibm.com IBM-only: Support only NFSV4.0 minor version by default
+982835605 malahal@us.ibm.com IBM-only: Validate client_record before using it. ==> Push to upstream
+1bc3b86e8 malahal@us.ibm.com IBM-only: [dpkg] Fix copying other systemd service unit files ==> need to check
+84468e340 malahal@us.ibm.com IBM-only: Undo upstream debian config file placement
+dc9cc74e8 malahal@us.ibm.com IBM-only: [GPFS] Set Grace_Period in example config  
+b1ccf5ab3 malahal@us.ibm.com IBM-only: Reset ganesha log file to /var/log/ganesha.log ==> need to check
+401d3e6bf swen@vnet.ibm.com IBM-only: Add SLES version information to RPM names.
+824624e83 malahal@us.ibm.com IBM-only: Add options to cmake to use spectrum's libwbclient.so library.
+10fbdafa9 malahal@us.ibm.com IBM-only: [ubuntu] disable building fsals other than gpfs
+790803ca7 madhu.punjabi@in.ibm.com IBM-only: Ubuntu: Added 'gpfs.base' as install dependency
+77f2ebea2 malahal@us.ibm.com IBM-only: gpfs.base package is not required for building ==> cleanup needed
+b2502ea39 malahal@us.ibm.com IBM-only: Add var/log/ganesha debian/dirs
+8b56b0d99 madhu.punjabi@in.ibm.com IBM-only: [Ubuntu] Changes to generate debug symbol package 
+9370d7d38 madhu.punjabi@in.ibm.com IBM-only: Fix name of python-ganesha dependency package 
+c2634e31f swen@vnet.ibm.com IBM-only: [Ubuntu] Adding build environment for Ubuntu.
+dfd2b40b8 malahal@us.ibm.com IBM-only: Remove generated config file and add it to gitignore. ==> ignore and check in the end
+857f08059 madhu.punjabi@in.ibm.com IBM-only: Release file system after it is unclaimed  ==> push to upstream
+924631503 malahal@us.ibm.com IBM-only: Remove generated config file and add it to gitignore. 	==> Discarded
+3bfbecc17 swen@vnet.ibm.com IBM-only: [SLES12] Fixed path resolution for epoch-script. 		==> Discarded
+f75e78106 malahal@us.ibm.com IBM-only: Use gpfs-epoch in spectrum scale ganesha config
+e29d4cbec malahal@us.ibm.com IBM-only: Increase LRU lanes to a large prime number (1031)
+b1afe69af malahal@us.ibm.com IBM-only: Handle granted upcalls when they are not in the blocked list ==> push to upstream
+
+
+
+========================================================================
+not cherry-picked. to be checked later:
+
+d4103856e malahal@us.ibm.com IBM-only: Malloc trim support ==> Need to be manually pick content and keep upstream usage and push to upstream
+c4721f684 malahal@us.ibm.com IBM-only: [GPFS] Handle DOTDOT lookup in .snapshots => discarded, pick from ibm2.7/later commit, to be pushed to upsteam
+fa2da1b11 madhu.punjabi@in.ibm.com IBM-only: MDCACHE: Add config param Cache_FDs and use it in the same way as in ibm2.5 code
+8ac7dd95c malahal@us.ibm.com IBM-only: Fix malloc trim management commands
+a3fc416a7 madhu.punjabi@in.ibm.com IBM-only: Add ENV_OPTIONS in /etc/sysconfig/ganesha file to have ASAN options
+887df5f6d malahal@us.ibm.com IBM-only: [Scale 51] Changes for python3 debian packages => check in the end EOF
+11efbd530 malahal@us.ibm.com IBM-only: [Scale 5.1] use python2 with RHEL7.x/CentsOS7.x
+ad5f4dfc4 nuzhat.fathima.shaik@ibm.com IBM-only: Made changes to retain the existing syntax of ganesha_mgr command in ganltc. => check in the end EOF
+18853c6ca malahal@us.ibm.com IBM-only: [scale] Avoid building unneeded rpms => needs to checked at EOF
+b32221b1b malahal@us.ibm.com IBM-only: Build libntirpc files in nfs-ganesha base package => needs to checked at EOF
+cb453ee1a malahal@us.ibm.com IBM-only: [GPFS] workaround for lookup of parent entry (DOTDOT)  => needs to checked at EOF
+b8fe13db7 Anuradha@li-0892024c-2c4b-11b2-a85c-fe75cc3c19d4.ibm.com IBM-only: Replaced the dbus_status_reply() with gsh_dbus_status_reply() to resolve build error. => needs to checked at EOF
+3a3f42b46 Anuradha@li-0892024c-2c4b-11b2-a85c-fe75cc3c19d4.ibm.com IBM-only: Revert : Revert "Rename ganesha.nfsd to gpfs.ganesha.nfsd" => needs to checked at EOF
+cd523d579 Anuradha@li-0892024c-2c4b-11b2-a85c-fe75cc3c19d4.ibm.com IBM-only: rpm nfs-ganesha-selinux is not needed. python3-dbus not suuported in RHEL7. => needs to checked at EOF
+3065e9e77 prabhu.murugeshan@ibm.com IBM-only:ganesha_mgr:Added input validation for display export  => needs to checked at EOF
+478131bf2 madhu.punjabi@in.ibm.com IBM-only: Malloc trim: Close FD before returning from get_current_rss()  => needs to checked at EOF
+
+0efec279b prabhu.murugeshan@ibm.com [IBM-Only] Skip mdcache_param init in cacheinode block read. => skipping as upstream fixed in a different way, to check functionality
+856bcd9f7 manish.laddha@ibm.com IBM-Only: Fixed GPFS create export issue during claim_posix_filesystem ==> not required for 4.0, test functionality
