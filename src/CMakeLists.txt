@@ -111,6 +111,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
       ERROR_QUIET
    )
   EXECUTE_PROCESS(
+      COMMAND awk -F=  "/^ID_LIKE=/ { print $2 }" /etc/os-release
+      OUTPUT_VARIABLE ID_LIKE
+   )
+  EXECUTE_PROCESS(
      COMMAND awk -F=  "/^VERSION_ID=/ { print $2 }" /etc/os-release
      # Remove quotes and other chars for version comparison
      COMMAND tr -dc "[0-9.]"
@@ -814,6 +818,7 @@ gopt_test(USE_NFSACL3)
   endif(USE_NFSACL3)
 
 gopt_test(USE_FSAL_GPFS)
+# GPFS has no dependencies
 
 gopt_test(USE_FSAL_XFS)
 if(USE_FSAL_XFS)
@@ -1650,6 +1655,11 @@ configure_file(
   "${PROJECT_SOURCE_DIR}/scripts/systemd/nfs-ganesha-config.service"
 )
 
+configure_file(
+  "${PROJECT_SOURCE_DIR}/scripts/systemd/sysconfig/nfs-ganesha-in.cmake"
+  "${PROJECT_SOURCE_DIR}/scripts/systemd/sysconfig/nfs-ganesha"
+)
+
 # Make a docker image
 set(DOCKER_TMP_INSTALL_PATH "${PROJECT_BINARY_DIR}/docker/root")
 find_package(LSB)
@@ -1693,18 +1703,18 @@ endif(COVERAGE)
 
 ########### next target ###############
 
-add_executable(ganesha.nfsd ./MainNFSD/nfs_main.c)
-add_sanitizers(ganesha.nfsd)
+add_executable(gpfs.ganesha.nfsd ./MainNFSD/nfs_main.c)
+add_sanitizers(gpfs.ganesha.nfsd)
 
-target_link_libraries(ganesha.nfsd
+target_link_libraries(gpfs.ganesha.nfsd
   ganesha_nfsd
   ${LIBTIRPC_LIBRARIES}
   ${SYSTEM_LIBRARIES}
   ${LTTNG_LIBRARIES}
   ${LDFLAG_DISALLOW_UNDEF}
 )
-set_target_properties(ganesha.nfsd PROPERTIES COMPILE_FLAGS "-fPIC")
-install(TARGETS ganesha.nfsd COMPONENT daemon DESTINATION bin)
+set_target_properties(gpfs.ganesha.nfsd PROPERTIES COMPILE_FLAGS "-fPIC")
+install(TARGETS gpfs.ganesha.nfsd COMPONENT daemon DESTINATION bin)
 
 ########### next target ###############
 

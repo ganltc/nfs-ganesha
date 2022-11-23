@@ -27,7 +27,7 @@ if(USE_FSAL_GPFS)
 	find_program(PYTHON NAMES "python3")
     endif()
 
-  if(PYTHON)
+  if(Python_FOUND)
     set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
     set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
     set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/build/gpfs_epoch_timestamp")
