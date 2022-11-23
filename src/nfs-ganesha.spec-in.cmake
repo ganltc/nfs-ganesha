@@ -136,6 +136,10 @@ BuildRequires:	dbus-devel
 Requires:	dbus
 %endif
 
+%if ( 0%{?rhel} >= 9 )
+Requires:	dbus-tools
+%endif
+
 %if ( 0%{?suse_version} )
 BuildRequires:  liburcu-devel
 Requires:       liburcu6
@@ -240,15 +244,15 @@ be used with NFS-Ganesha to support VFS based filesystems
 Summary: The NFS-GANESHA util scripts
 Group: Applications/System
 %if (0%{?suse_version} && 0%{?sle_version} >= 150000)
-Requires:       python3-dbus-python, python3-pyparsing
-BuildRequires:  python3-devel
+Requires:       python3-dbus-python, python3-pyparsing, dbus-1-python
+BuildRequires:  python3-devel 
 %else
 %if (0%{?rhel} && 0%{?rhel} >= 8)
-Requires:       python3-dbus, python3-pyparsing
+Requires:       python3-dbus, python3-gobject, python3-pyparsing
 BuildRequires:  python3-devel
 %else
 # RHEL7.x
-Requires:       dbus-python, pyparsing
+Requires:       dbus-python, pygobject2, pyparsing
 BuildRequires:  python-devel
 %endif
 %endif
@@ -740,9 +744,9 @@ exit 0
 %endif
 %endif
 
-%if %{with panfs}
-%files panfs
-%{_libdir}/ganesha/libfsalpanfs*
+%if %{with kvsfs}
+%files kvsfs
+%{_libdir}/ganesha/libfsalkvsfs*
 %endif
 
 %if %{with pt}
