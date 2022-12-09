@@ -2696,7 +2696,7 @@ void global_dbus_total_ops(DBusMessageIter *iter)
 	struct timespec timestamp;
 
 	now(&timestamp);
-	dbus_append_timestamp(iter, &timestamp);
+	gsh_dbus_append_timestamp(iter, &timestamp);
 	global_dbus_total(iter);
 }
 

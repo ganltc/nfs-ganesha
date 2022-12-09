@@ -38,9 +38,10 @@ cmake ../src -DBUILD_CONFIG=rpmbuild -DCMAKE_BUILD_TYPE=Release            \
 	-DUSE_FSAL_LUSTRE=OFF			                           \
 	-DUSE_FSAL_CEPH=OFF						   \
 	-DUSE_FSAL_RGW=OFF			 			   \
-	-DUSE_FSAL_PANFS=OFF						   \
 	-DUSE_FSAL_GLUSTER=OFF						   \
-	-DUSE_FSAL_PROXY=OFF						   \
+	-DUSE_FSAL_PROXY_V4=OFF					   \
+	-DUSE_FSAL_PROXY_V3=OFF					   \
+	-DUSE_FSAL_KVSFS=OFF                        \
 	-DUSE_FSAL_GPFS=ON  &&  					   \
 make dist &&                                                               \
 QA_RPATHS=2 rpmbuild -ta nfs-ganesha*.tar.gz

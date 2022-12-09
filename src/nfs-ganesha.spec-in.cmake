@@ -481,8 +481,7 @@ cmake .	-DCMAKE_BUILD_TYPE=Debug			\
 	-DUSE_RADOS_RECOV=%{use_rados_recov}		\
 	-DRADOS_URLS=%{use_rados_urls}			\
 	-DUSE_FSAL_VFS=ON				\
-	-DUSE_FSAL_PROXY_V4=OFF				\
-	-DUSE_FSAL_PROXY=OFF				\
+	-DUSE_FSAL_PROXY_V4=ON				\
 	-DUSE_DBUS=ON					\
 	-DUSE_9P=OFF					\
 	-DDISTNAME_HAS_GIT_DATA=OFF			\
@@ -623,8 +622,8 @@ exit 0
 %endif
 
 %files
-%{_libdir}/libganesha_nfsd.so*
 %{_bindir}/gpfs.ganesha.nfsd
+%{_libdir}/libganesha_nfsd.so*
 
 %if ! %{with system_ntirpc}
 %{_libdir}/libntirpc.so.@NTIRPC_VERSION_EMBED@
@@ -797,7 +796,7 @@ exit 0
 
 %if %{with utils}
 %files utils
-%if (0%{?rhel} && 0%{?rhel} < 8)
+%if ( 0%{?rhel} && 0%{?rhel} < 8 )
 %{python2_sitelib}/Ganesha/*
 %{python2_sitelib}/ganeshactl-*-info
 %else

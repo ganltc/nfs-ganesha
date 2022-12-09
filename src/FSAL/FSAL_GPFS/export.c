@@ -49,6 +49,8 @@
 #include "export_mgr.h"
 #include "pnfs_utils.h"
 #include "include/gpfs.h"
+#include "FSAL/fsal_localfs.h"
+
 
 /* export object methods
  */
@@ -677,10 +679,10 @@ void gpfs_unexport_filesystems(struct gpfs_fsal_export *exp)
 			LogInfo(COMPONENT_FSAL,
 				"GPFS is no longer exporting filesystem %s",
 				fs->path);
-			unclaim_fs(fs);
+			//unclaim_fs(fs);
 
 			if (glist_empty(&fs->children))
-				release_posix_file_system(fs);
+				release_posix_file_system(fs,UNCLAIM_WARN);
 		}
 
 		/* And free it */

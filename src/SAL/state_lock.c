@@ -3549,11 +3549,11 @@ static void find_blocked_lock_upcall(struct fsal_obj_handle *obj, void *owner,
 	PTHREAD_MUTEX_unlock(&blocked_locks_mutex);
 
 	if (isFullDebug(COMPONENT_STATE) && isFullDebug(COMPONENT_MEMLEAKS)) {
-		PTHREAD_RWLOCK_rdlock(&obj->state_hdl->state_lock);
+		PTHREAD_MUTEX_lock(&obj->state_hdl->st_lock);
 
 		LogList("File Lock List", obj, &obj->state_hdl->file.lock_list);
 
-		PTHREAD_RWLOCK_unlock(&obj->state_hdl->state_lock);
+		PTHREAD_MUTEX_lock(&obj->state_hdl->st_lock);
 	}
 
 	/* It is likely that we got an upcall before the cancel request.
