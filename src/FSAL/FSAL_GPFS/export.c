@@ -49,6 +49,8 @@
 #include "export_mgr.h"
 #include "pnfs_utils.h"
 #include "include/gpfs.h"
+#include "FSAL/fsal_localfs.h"
+
 
 /* export object methods
  */
