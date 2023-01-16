@@ -273,7 +273,7 @@ Requires:       python3-dbus, python3-gobject, python3-pyparsing
 BuildRequires:  python3-devel
 %else
 # RHEL7.x
-Requires:       dbus-python, pygobject2, pyparsing
+Requires:       python36-dbus, dbus-python, pygobject2, pyparsing
 BuildRequires:  python-devel
 %endif
 %endif
@@ -799,13 +799,8 @@ exit 0
 
 %if %{with utils}
 %files utils
-%if ( 0%{?rhel} && 0%{?rhel} < 8 )
-%{python2_sitelib}/Ganesha/*
-%{python2_sitelib}/ganeshactl-*-info
-%else
 %{python3_sitelib}/Ganesha/*
 %{python3_sitelib}/ganeshactl-*-info
-%endif
 
 %if %{with gui_utils}
 %{_bindir}/ganesha-admin
