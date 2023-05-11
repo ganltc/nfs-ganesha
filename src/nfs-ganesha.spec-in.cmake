@@ -265,7 +265,7 @@ be used with NFS-Ganesha to support PROXY_V3 based filesystems
 Summary: The NFS-GANESHA util scripts
 Group: Applications/System
 %if (0%{?suse_version} && 0%{?sle_version} >= 150000)
-Requires:       python3-dbus-python, python3-pyparsing, dbus-1-python
+Requires:       python3-dbus-python, python3-pyparsing
 BuildRequires:  python3-devel 
 %else
 %if (0%{?rhel} && 0%{?rhel} >= 8)
