@@ -134,21 +134,19 @@ int rquota_getquota(nfs_arg_t *arg, struct svc_req *req, nfs_res_t *res)
 	uint64_t curblocksscaled = fsal_quota.curblocks;
 	uint64_t bsizescaled = fsal_quota.bsize;
 
-	while ((bhardlimitscaled > UINT32_MAX) || (bsoftlimitscaled > UINT32_MAX) || (curblocksscaled > UINT32_MAX))
-	{
-		// check if we hit the limit of scaling, then limit to max
-		if ((bsizescaled << 1) > UINT32_MAX)
-		{
+	while ((bhardlimitscaled > UINT32_MAX) ||
+			(bsoftlimitscaled > UINT32_MAX) ||
+			(curblocksscaled > UINT32_MAX)) {
+		/* check if we hit the limit of scaling, then limit to max */
+		if ((bsizescaled << 1) > UINT32_MAX) {
 			if (bhardlimitscaled > UINT32_MAX)
 				bhardlimitscaled = UINT32_MAX;
 			if (bsoftlimitscaled > UINT32_MAX)
 				bsoftlimitscaled = UINT32_MAX;
 			if (curblocksscaled > UINT32_MAX)
 				curblocksscaled = UINT32_MAX;
-		}
-		else
-		{
-			// we can still scale
+		} else {
+			/* we can still scale */
 			bhardlimitscaled = bhardlimitscaled >> 1;
 			bsoftlimitscaled = bsoftlimitscaled >> 1;
 			curblocksscaled = curblocksscaled >> 1;
@@ -156,12 +154,12 @@ int rquota_getquota(nfs_arg_t *arg, struct svc_req *req, nfs_res_t *res)
 		}
 	}
 	qres->getquota_rslt_u.gqr_rquota.rq_active = TRUE;
-	// items that have changed due to scaling
+	/* items that have changed due to scaling */
 	qres->getquota_rslt_u.gqr_rquota.rq_bsize = bsizescaled;
 	qres->getquota_rslt_u.gqr_rquota.rq_bhardlimit = bhardlimitscaled;
 	qres->getquota_rslt_u.gqr_rquota.rq_bsoftlimit = bsoftlimitscaled;
 	qres->getquota_rslt_u.gqr_rquota.rq_curblocks = curblocksscaled;
-	// items carried over unchanged
+	/* items carried over unchanged */
 	qres->getquota_rslt_u.gqr_rquota.rq_curfiles = fsal_quota.curfiles;
 	qres->getquota_rslt_u.gqr_rquota.rq_fhardlimit = fsal_quota.fhardlimit;
 	qres->getquota_rslt_u.gqr_rquota.rq_fsoftlimit = fsal_quota.fsoftlimit;
