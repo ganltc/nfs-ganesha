@@ -440,6 +440,8 @@ else(USE_NFS3)
     # Disable NFSACL3 protocol extension support
     set(USE_NFSACL3 OFF)
 endif(USE_NFS3)
+# IBM only - unconditional off for NFSACL3
+set(USE_NFSACL3 OFF)
 
 # Enable RQUOTA support
 option(USE_RQUOTA "enable RQUOTA support" ON)
@@ -805,7 +807,8 @@ gopt_test(USE_NFSACL3)
       message(STATUS "Could not find libacl, disabling USE_NFSACL3")
     endif(HAVE_LIBACL)
   endif(USE_NFSACL3)
-
+# IBM only unconditional on for ACL_MAPPING
+set(USE_ACL_MAPPING ON)
 gopt_test(USE_FSAL_GPFS)
 # GPFS has no dependencies
 
