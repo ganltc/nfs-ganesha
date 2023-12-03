@@ -151,18 +151,6 @@ int mdcache_set_param_from_conf(config_file_t parse_tree,
 		return -1;
 	}
 	
-	/* CACHEINODE block will be removed in next release */
-	(void) load_config_from_parse(parse_tree,
-				      &cache_inode_param_blk,
-				      NULL,
-				      true,
-				      err_type);
-	if (!config_error_is_harmless(err_type)) {
-		LogCrit(COMPONENT_INIT,
-			"Error while parsing CACHEINODE specific configuration");
-		return -1;
-	}
-
 	/* Compute avl_chunk_split after reading config, make sure it's a
 	 * multiple of two.
 	 */
