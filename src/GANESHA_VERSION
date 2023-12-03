@@ -1,7 +1,7 @@
 # Place NFS Ganesha version and tag information here
 # Note: this file will be sourced by shell scripts!
 
-GANESHA_MAJOR_VERSION=4
-GANESHA_MINOR_VERSION=1
-GANESHA_TAG=ibm072.00
+GANESHA_MAJOR_VERSION=5
+GANESHA_MINOR_VERSION=5
+GANESHA_TAG=ibm000.00
 
