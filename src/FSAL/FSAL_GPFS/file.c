@@ -553,12 +553,17 @@ gpfs_open2(struct fsal_obj_handle *obj_hdl, struct state_t *state,
 		goto fileerr;
 	}
 
+
 	/* allocate an obj_handle and fill it up */
 	hdl = alloc_handle(&fh, obj_hdl->fs, attrs_out, NULL, export);
 	if (hdl == NULL) {
 		status = fsalstat(posix2fsal_error(ENOMEM), ENOMEM);
 		goto fileerr;
 	}
+	/* Need to LRU track global fd including incrementing
+	* fsal_fd_global_counter.
+    */
+	insert_fd_lru(&hdl->u.file.fd.fsal_fd);
 
 	*new_obj = &hdl->obj_handle;
 
