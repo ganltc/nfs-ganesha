@@ -23,11 +23,7 @@ Build-Depends: debhelper (>= 9),
                dh-python,
                python3-all,
                python3-setuptools,
-               python3-all,
-               python3-setuptools,
                dh-systemd | debhelper,
-               python-qt4,
-               pyqt4-dev-tools,
                pkgconf
 Vcs-Git: https://github.com/ganltc/nfs-ganesha.git
 
@@ -64,7 +60,6 @@ Architecture: all
 Section: python
 Depends: python3-dbus,
          python3-gi,
-         python-qt4,
          python3-pyparsing,
          ${python3:Depends}
 Description: Python bindings for nfs-ganesha
