@@ -2,6 +2,6 @@
 # Note: this file will be sourced by shell scripts!
 
 GANESHA_MAJOR_VERSION=5
-GANESHA_MINOR_VERSION=5
-GANESHA_TAG=ibm005.00
+GANESHA_MINOR_VERSION=7
+GANESHA_TAG=ibm006.00
 
