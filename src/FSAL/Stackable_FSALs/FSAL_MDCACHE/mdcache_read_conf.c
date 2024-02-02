@@ -138,14 +138,15 @@ struct config_block mdcache_param_blk = {
 };
 
 int mdcache_set_param_from_conf(config_file_t parse_tree,
-				struct config_error_type *err_type)
+				struct config_error_type *err_type,
+				bool isStrictParsingEnabled)
 {
 	(void) load_config_from_parse(parse_tree,
 				      &mdcache_param_blk,
 				      NULL,
 				      true,
 				      err_type);
-	if (!config_error_is_harmless(err_type)) {
+	if (!config_error_is_harmless(err_type) && isStrictParsingEnabled) {
 		LogCrit(COMPONENT_INIT,
 			"Error while parsing MDCACHE specific configuration");
 		return -1;

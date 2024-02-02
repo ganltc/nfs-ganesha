@@ -74,7 +74,8 @@ void nfs_prereq_destroy(void);
  */
 int nfs_set_param_from_conf(config_file_t config_struct,
 			    nfs_start_info_t *p_start_info,
-			    struct config_error_type *err_type);
+			    struct config_error_type *err_type,
+			    bool isStrictParsingEnabled);
 
 /**
  * Initialization that needs config file parse but must be done

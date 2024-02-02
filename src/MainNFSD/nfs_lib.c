@@ -214,7 +214,8 @@ int nfs_libmain(const char *ganesha_conf,
 
 	if (nfs_set_param_from_conf(nfs_config_struct,
 				    &my_nfs_start_info,
-				    &err_type)) {
+				    &err_type,
+				    true)) {
 		LogCrit(COMPONENT_INIT,
 			 "Error setting parameters from configuration file.");
 		goto fatal_die;
