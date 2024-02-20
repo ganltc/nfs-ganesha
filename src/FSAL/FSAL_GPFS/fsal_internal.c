@@ -72,6 +72,9 @@ fsal_status_t fsal_internal_close(int fd, void *owner, int cflags)
 {
 	struct close_file_arg carg;
 
+	if (fd == -1)
+		return fsalstat(ERR_FSAL_NOT_OPENED, 0);
+
 	/* fd should not be less than 3 */
 	assert(fd >= 3);
 
