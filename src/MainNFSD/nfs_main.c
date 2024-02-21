@@ -524,7 +524,7 @@ int main(int argc, char *argv[])
 	 * returns the number of DS entries.
 	 */
 	dsc = ReadDataServers(nfs_config_struct, &err_type);
-	if (dsc < 0) {
+	if (dsc < 0 && config_errors_fatal) {
 		LogCrit(COMPONENT_INIT,
 			"Error while parsing DS entries");
 		goto fatal_die;
