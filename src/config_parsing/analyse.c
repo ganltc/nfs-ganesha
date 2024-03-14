@@ -28,6 +28,7 @@
 #include "config.h"
 #include "config_parsing.h"
 #include "analyse.h"
+#include "city.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -35,6 +36,56 @@
 #include <string.h>
 #endif
 #include "abstract_mem.h"
+
+
+/* sanitize token string */
+void sanitize_token_str(char *token, int esc)
+{
+	char *sp, *dp;
+	int c;
+
+	sp = token;
+	dp = token; /* Change dp to point to token itself */
+
+	c = *sp++;
+
+	if (esc) {
+		if (c == '\"')
+		c = *sp++; /* gobble leading '"' from regexp */
+
+		while (c != '\0') {
+		if (c == '\\') {
+		c = *sp++;
+		if (c == '\0')
+			break;
+		switch (c) {
+		case 'n':
+			c = '\n';
+			break;
+		case 't':
+			c = '\t';
+			break;
+		case 'r':
+			c = '\r';
+			break;
+		default:
+			break;
+		}
+		} else if (c == '"' && *sp == '\0')
+		break; /* skip trailing '"' from regexp */
+
+		*dp++ = c;
+		c = *sp++;
+		}
+	    *dp = '\0'; /* Null-terminate the string*/
+	} else {
+		if (*token == '\'') /* skip and chomp "'" in an SQUOTE */
+		    token++;
+
+		if (token[strlen(token) - 1] == '\'')
+		    token[strlen(token) - 1] = '\0';
+	}
+}
 
 /**
  * @brief Insert a scanner token into the token table
@@ -54,58 +105,36 @@
 char *save_token(char *token, bool esc, struct parser_state *st)
 {
 	struct token_tab *tokp, *new_tok;
+	uint64_t hashkey;
+
+	sanitize_token_str(token, esc);
+	hashkey = CityHash64(token, sizeof(token));
 
 	for (tokp = st->root_node->tokens;
 	     tokp != NULL;
 	     tokp = tokp->next) {
-		if (strcmp(token, tokp->token) == 0)
+		if (tokp->token_hashkey == hashkey &&
+			strlen(token) == strlen(tokp->token) &&
+			strcmp(token, tokp->token) == 0) {
 			return tokp->token;
+		}
 	}
+
 	new_tok = gsh_calloc(1, (sizeof(struct token_tab) +
 				 strlen(token) + 1));
 	if (new_tok == NULL)
 		return NULL;
-	if (esc) {
-		char *sp, *dp;
-		int c;
 
-		sp = token;
-		dp = new_tok->token;
-		c = *sp++;
-		if (c == '\"')
-			c = *sp++; /* gobble leading '"' from regexp */
-		while (c != '\0') {
-			if (c == '\\') {
-				c = *sp++;
-				if (c == '\0')
-					break;
-				switch (c) {
-				case 'n':
-					c = '\n';
-					break;
-				case 't':
-					c = '\t';
-					break;
-				case 'r':
-					c = '\r';
-					break;
-				default:
-					break;
-				}
-			} else if (c == '"' && *sp == '\0')
-				break;  /* skip trailing '"' from regexp */
-			*dp++ = c;
-			c = *sp++;
-		}
-	} else {
-		if (*token == '\'')  /* skip and chomp "'" in an SQUOTE */
-			token++;
-		strcpy(new_tok->token, token);
-		if (new_tok->token[strlen(new_tok->token) - 1] == '\'')
-			new_tok->token[strlen(new_tok->token) - 1] = '\0';
-	}
-	new_tok->next = st->root_node->tokens;
-	st->root_node->tokens = new_tok;
+	strcpy(new_tok->token, token);
+	new_tok->token_hashkey = hashkey;
+
+	if (st->root_node->tokens == NULL)
+		st->root_node->tokens = new_tok;
+	else
+		st->root_node->last->next = new_tok;
+
+	st->root_node->last = new_tok;
+
 	return new_tok->token;
 }
 
@@ -210,7 +239,6 @@ void print_parse_tree(FILE *output, struct config_root *tree)
 		print_node(output, node, 3);
 	}
 	fprintf(output, "</PARSE_TREE>\n");
-	return;
 }
 
 /**
@@ -234,7 +262,6 @@ static void free_node(struct config_node *node)
 		}
 	}
 	gsh_free(node);
-	return;
 }
 
 void free_parse_tree(struct config_root *tree)
@@ -250,7 +277,7 @@ void free_parse_tree(struct config_root *tree)
 		free_node(node);
 	}
 	gsh_free(tree->root.filename);
-	if(tree->conf_dir != NULL)
+	if (tree->conf_dir != NULL)
 		gsh_free(tree->conf_dir);
 	file = tree->files;
 	while (file != NULL) {
@@ -266,7 +293,6 @@ void free_parse_tree(struct config_root *tree)
 		token = next_token;
 	}
 	gsh_free(tree);
-	return;
 }
 
 void config_error(FILE *fp, const char *filename, int linenum,

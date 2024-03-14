@@ -7,16 +7,15 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
- * 
+ *
  * ---------------------------------------
  */
 
@@ -64,7 +63,7 @@ struct config_node {
 			char *name;	/* name */
 			struct glist_head sub_nodes;
 		} nterm;
-	}u;
+	} u;
 };
 
 /*
@@ -87,6 +86,7 @@ struct file_list {
 
 struct token_tab {
 	struct token_tab *next;
+	uint64_t token_hashkey;
 	char token[];
 };
 
@@ -105,6 +105,7 @@ struct config_root {
 	char *conf_dir;
 	struct file_list *files;
 	struct token_tab *tokens;
+	struct token_tab *last;
 	uint64_t generation;
 };
 
@@ -137,7 +138,7 @@ void config_error(FILE *fp, const char *filename, int linenum,
 /**
  *  Displays the content of parse tree.
  */
-void print_parse_tree(FILE * output, struct config_root *tree);
+void print_parse_tree(FILE *output, struct config_root *tree);
 
 /**
  * Free resources of parse tree
