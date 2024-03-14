@@ -27,47 +27,42 @@
 
 int main(int argc, char **argv)
 {
-	SetDefaultLogging("TEST");
-	SetNamePgm("test_parse");
-
 	config_file_t config;
+	struct config_error_type err_type;
+
 	char *fichier;
-	char *errtxt;
 
 	if ((argc > 1) && (argv[1])) {
 		fichier = argv[1];
 	} else {
-		LogTest("Usage %s <config_file>", argv[0]);
+		printf("Usage %s <config_file>", argv[0]);
 		exit(EINVAL);
 	}
 
 	/* Parsing example */
-	config = config_ParseFile(fichier);
+	config = config_ParseFile(fichier, &err_type);
 
-	LogTest("config_pointer = %p", config);
+	printf("config_pointer = %p", config);
 
 	if (config == NULL) {
-		errtxt = config_GetErrorMsg();
-		LogTest("Error in parsing %s : %s", argv[1], errtxt);
+		printf("Error in parsing %s ", argv[1]);
 		exit(EINVAL);
 	}
 
-	config_Print(stdout, config);
 
 
 /* free and reload the file */
 	config_Free(config);
 
-	config = config_ParseFile(fichier);
+	config = config_ParseFile(fichier, &err_type);
 
-	LogTest("config_pointer = %p", config);
+	printf("config_pointer = %p", config);
 
 	if (config == NULL) {
-		LogTest("Parsing error for %s", argv[1], errtxt);
+		printf("Parsing error for %s", argv[1]);
 		exit(EINVAL);
 	}
 
-	config_Print(stdout, config);
 	config_Free(config);
 
 	exit(0);
