@@ -340,7 +340,6 @@ struct config_block nfs_core = {
 	.dbus_interface_name = "org.ganesha.nfsd.config.core",
 	.blk_desc.name = "NFS_Core_Param",
 	.blk_desc.type = CONFIG_BLOCK,
-	.blk_desc.flags = CONFIG_UNIQUE,  /* too risky to have more */
 	.blk_desc.u.blk.init = noop_conf_init,
 	.blk_desc.u.blk.params = core_params,
 	.blk_desc.u.blk.commit = noop_conf_commit

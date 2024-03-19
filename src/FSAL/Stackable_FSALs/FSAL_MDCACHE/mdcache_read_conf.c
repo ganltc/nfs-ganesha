@@ -126,16 +126,24 @@ static int mdcache_param_commit(void *node, void *link_mem, void *self_struct,
 	return errcnt;
 }
 
-struct config_block mdcache_param_blk = {
+struct config_block cache_inode_param_blk = {
 	.dbus_interface_name = "org.ganesha.nfsd.config.mdcache",
-	.blk_desc.name = "MDCACHE",
-	.blk_desc.altname = "CacheInode",
+	.blk_desc.name = "CacheInode",
 	.blk_desc.type = CONFIG_BLOCK,
-	.blk_desc.flags = CONFIG_UNIQUE,  /* too risky to have more */
 	.blk_desc.u.blk.init = mdcache_param_init,
 	.blk_desc.u.blk.params = mdcache_params,
 	.blk_desc.u.blk.commit = mdcache_param_commit
 };
+
+struct config_block mdcache_param_blk = {
+	.dbus_interface_name = "org.ganesha.nfsd.config.mdcache",
+	.blk_desc.name = "MDCACHE",
+	.blk_desc.type = CONFIG_BLOCK,
+	.blk_desc.u.blk.init = mdcache_param_init,
+	.blk_desc.u.blk.params = mdcache_params,
+	.blk_desc.u.blk.commit = noop_conf_commit
+};
+
 
 int mdcache_set_param_from_conf(config_file_t parse_tree,
 				struct config_error_type *err_type)
@@ -148,6 +156,19 @@ int mdcache_set_param_from_conf(config_file_t parse_tree,
 	if (!config_error_is_harmless(err_type)) {
 		LogCrit(COMPONENT_INIT,
 			"Error while parsing MDCACHE specific configuration");
+		return -1;
+	}
+
+
+	/* CACHEINODE block will be removed in next release */
+	(void) load_config_from_parse(parse_tree,
+				      &cache_inode_param_blk,
+				      NULL,
+				      true,
+				      err_type);
+	if (!config_error_is_harmless(err_type)) {
+		LogCrit(COMPONENT_INIT,
+			"Error while parsing CACHEINODE specific configuration");
 		return -1;
 	}
 	
