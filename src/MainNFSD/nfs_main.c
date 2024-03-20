@@ -503,8 +503,7 @@ int main(int argc, char *argv[])
 
 	if (nfs_set_param_from_conf(nfs_config_struct,
 				    &my_nfs_start_info,
-				    &err_type,
-				    config_errors_fatal)) {
+				    &err_type)) {
 		LogCrit(COMPONENT_INIT,
 			 "Error setting parameters from configuration file.");
 		goto fatal_die;

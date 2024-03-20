@@ -56,8 +56,7 @@ fsal_status_t mdcache_pkginit(void);
 
 /* Parse mdcache config */
 int mdcache_set_param_from_conf(config_file_t parse_tree,
-				struct config_error_type *err_type,
-				bool isStrictParsingEnabled);
+				struct config_error_type *err_type);
 
 void init_fds_limit(void);
 #endif /* MDCACHE_H */

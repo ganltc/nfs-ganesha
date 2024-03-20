@@ -403,8 +403,7 @@ static inline void core_pkginit(void)
  */
 int nfs_set_param_from_conf(config_file_t parse_tree,
 			    nfs_start_info_t *p_start_info,
-			    struct config_error_type *err_type,
-			    bool isStrictParsingEnabled)
+			    struct config_error_type *err_type)
 {
 	/*
 	 * Initialize exports and clients so config parsing can use them
@@ -421,7 +420,7 @@ int nfs_set_param_from_conf(config_file_t parse_tree,
 				      &nfs_param.core_param,
 				      true,
 				      err_type);
-	if (!config_error_is_harmless(err_type) && isStrictParsingEnabled) {
+	if (!config_error_is_harmless(err_type)) {
 		LogCrit(COMPONENT_INIT,
 			"Error while parsing core configuration");
 		return -1;
@@ -435,7 +434,7 @@ int nfs_set_param_from_conf(config_file_t parse_tree,
 				      NULL,
 				      true,
 				      err_type);
-	if (!config_error_is_harmless(err_type) && isStrictParsingEnabled) {
+	if (!config_error_is_harmless(err_type)) {
 		LogCrit(COMPONENT_INIT,
 			"Error while parsing IP/name configuration");
 		return -1;
@@ -448,7 +447,7 @@ int nfs_set_param_from_conf(config_file_t parse_tree,
 				      &nfs_param.krb5_param,
 				      true,
 				      err_type);
-	if (!config_error_is_harmless(err_type) && isStrictParsingEnabled) {
+	if (!config_error_is_harmless(err_type)) {
 		LogCrit(COMPONENT_INIT,
 			"Error while parsing NFS/KRB5 configuration for RPCSEC_GSS");
 		return -1;
@@ -461,7 +460,7 @@ int nfs_set_param_from_conf(config_file_t parse_tree,
 				      &nfs_param.nfsv4_param,
 				      true,
 				      err_type);
-	if (!config_error_is_harmless(err_type) && isStrictParsingEnabled) {
+	if (!config_error_is_harmless(err_type)) {
 		LogCrit(COMPONENT_INIT,
 			"Error while parsing NFSv4 specific configuration");
 		return -1;
@@ -480,7 +479,7 @@ int nfs_set_param_from_conf(config_file_t parse_tree,
 	}
 #endif
 
-	if (mdcache_set_param_from_conf(parse_tree, err_type, isStrictParsingEnabled) < 0)
+	if (mdcache_set_param_from_conf(parse_tree, err_type) < 0)
 		return -1;
 
 	if (load_recovery_param_from_conf(parse_tree, err_type) < 0)
