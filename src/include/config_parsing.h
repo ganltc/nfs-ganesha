@@ -679,7 +679,6 @@ struct config_item {
 #define CONF_ITEM_UI16(_name_, _min_, _max_, _def_, _struct_, _mem_) \
 	{ .name = _name_,			    \
 	  .type = CONFIG_UINT16,		    \
-	  .flags = CONFIG_UNIQUE,		    \
 	  .u.ui16.minval = _min_,		    \
 	  .u.ui16.maxval = _max_,		    \
 	  .u.ui16.def = _def_,			    \
