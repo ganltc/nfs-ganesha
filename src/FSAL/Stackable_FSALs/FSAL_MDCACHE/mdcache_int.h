@@ -854,7 +854,7 @@ mdcache_test_attrs_trust(mdcache_entry_t *entry, attrmask_t mask)
 	if (!test_mde_flags(entry, flags))
 		return false;
 
-	if ((entry->attrs.valid_mask & mask) != (mask & ~ATTR_RDATTR_ERR))
+	if ((entry->attrs.valid_mask & mask) != mask)
 		return false;
 
 	return true;
