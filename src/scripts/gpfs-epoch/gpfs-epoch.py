@@ -37,7 +37,11 @@ def put_genid(genid):
         f.write("%s" % genid)
 
 def get_mount():
-    output = Popen("mount", shell=True, stdout=PIPE).communicate()[0].decode()
+    OS = os.uname()[0]
+    if OS == 'Linux':
+        output = Popen("/bin/mount", shell=True, stdout=PIPE).communicate()[0].decode()
+    if OS == 'AIX':
+        output = Popen("/usr/sbin/mount", shell=True, stdout=PIPE).communicate()[0].decode()
     for line in output.splitlines():
         # the mount output line format is
         #
