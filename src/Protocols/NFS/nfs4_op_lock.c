@@ -202,7 +202,7 @@ enum nfs_req_result nfs4_op_lock(struct nfs_argop4 *op,
 			res_LOCK4->status = nfs_status;
 			LogDebug(COMPONENT_NFS_V4_LOCK,
 				 "LOCK failed nfs4_Check_Stateid for open owner");
-			return NFS_REQ_ERROR;
+			goto out2;
 		}
 
 		open_owner = get_state_owner_ref(state_open);
@@ -315,7 +315,7 @@ enum nfs_req_result nfs4_op_lock(struct nfs_argop4 *op,
 			res_LOCK4->status = nfs_status;
 			LogDebug(COMPONENT_NFS_V4_LOCK,
 				 "LOCK failed nfs4_Check_Stateid for existing lock owner");
-			return NFS_REQ_ERROR;
+			goto out2;
 		}
 
 		/* Check if lock state belongs to same export */
