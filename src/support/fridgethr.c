@@ -1330,6 +1330,7 @@ void fridgethr_cancel(struct fridgethr *fr)
 		   Which means the thread isn't running.  Which is
 		   good enough for me. */
 		pthread_cancel(t->ctx.id);
+		pthread_join(t->ctx.id, NULL);
 		glist_del(&t->thread_link);
 		gsh_free(t);
 		--(fr->nthreads);
