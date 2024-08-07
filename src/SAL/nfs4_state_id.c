@@ -970,7 +970,8 @@ nfsstat4 nfs4_Check_Stateid(stateid4 *stateid, struct fsal_obj_handle *fsal_obj,
 			 */
 			if (!reserve_lease_or_expire(
 				    pclientid,
-				    (flags & STATEID_SPECIAL_CLOSE_40) != 0)) {
+				    (flags & STATEID_SPECIAL_CLOSE_40) != 0,
+				    NULL)) {
 
 				LogDebug(COMPONENT_STATE,
 					 "Returning NFS4ERR_EXPIRED");
@@ -1010,7 +1011,7 @@ nfsstat4 nfs4_Check_Stateid(stateid4 *stateid, struct fsal_obj_handle *fsal_obj,
 			 * If it's valid, Just update the lease and leave the
 			 * reserved clientid NULL.
 			 */
-			if (!reserve_lease_or_expire(pclientid, true)) {
+			if (!reserve_lease_or_expire(pclientid, true, NULL)) {
 				LogDebug(COMPONENT_STATE,
 					 "Returning NFS4ERR_EXPIRED");
 
@@ -1054,7 +1055,7 @@ nfsstat4 nfs4_Check_Stateid(stateid4 *stateid, struct fsal_obj_handle *fsal_obj,
 		/* Check if lease is expired and reserve it */
 		if (!reserve_lease_or_expire(
 				owner2->so_owner.so_nfs4_owner.so_clientrec,
-				false)) {
+				false, &owner2)) {
 			LogDebug(COMPONENT_STATE, "Returning NFS4ERR_EXPIRED");
 
 			status = NFS4ERR_EXPIRED;
