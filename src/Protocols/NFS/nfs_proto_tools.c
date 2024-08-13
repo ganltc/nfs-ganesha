@@ -3910,8 +3910,9 @@ bool nfs3_Fixup_FSALattr(struct fsal_obj_handle *obj,
 		return false;
 
 	if ((want & FSAL_attr->valid_mask) != want) {
-		LogCrit(COMPONENT_NFSPROTO,
-			"Likely bug: FSAL did not fill in a standard NFSv3 attribute: missing %" PRIx64,
+		LogFullDebug(COMPONENT_NFSPROTO,
+			"Likely bug: FSAL did not fill in a standard NFSv3 attribute: missing %"
+			PRIx64,
 			want & ~(FSAL_attr->valid_mask));
 		return false;
 	}
