@@ -777,14 +777,10 @@ exit 0
 
 %if %{with utils}
 %files utils
-%if ( 0%{?rhel} && 0%{?rhel} < 8 )
-%{python_sitelib}/Ganesha/*
-%{python_sitelib}/ganeshactl-*-info
-%else
 %{python3_sitelib}/Ganesha/*
 %{python3_sitelib}/ganeshactl-*-info
 %{python3_sitelib}/ganesha_top-*-info
-%endif
+
 %if %{with gui_utils}
 %{_bindir}/ganesha-admin
 %{_bindir}/manage_clients
