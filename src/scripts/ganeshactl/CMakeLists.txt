@@ -47,6 +47,7 @@ set(SCRIPT_SRC
   ganesha_mgr.py
   ganesha_stats.py
   ganesha_conf.py
+  ganesha_logrotate_mgr.py
   )
 
 set(GUI_SCRIPT_SRC
