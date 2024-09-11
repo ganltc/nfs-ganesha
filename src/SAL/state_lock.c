@@ -657,6 +657,7 @@ static void lock_entry_dec_ref(state_lock_entry_t *lock_entry)
 			glist_del(&lock_entry->sle_block_data->sbd_list);
 			PTHREAD_MUTEX_unlock(&blocked_locks_mutex);
 			gsh_free(lock_entry->sle_block_data);
+			lock_entry->sle_block_data = NULL;
 		}
 #ifdef DEBUG_SAL
 		PTHREAD_MUTEX_lock(&all_locks_mutex);
