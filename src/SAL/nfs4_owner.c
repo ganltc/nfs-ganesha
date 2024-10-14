@@ -70,14 +70,15 @@ int display_nfs4_owner(struct display_buffer *dspbuf, state_owner_t *owner)
 {
 	int b_left;
 	time_t texpire;
-	struct state_nfs4_owner_t *nfs4_owner = &owner->so_owner.so_nfs4_owner;
+	struct state_nfs4_owner_t *nfs4_owner;
 
 	if (owner == NULL)
 		return display_cat(dspbuf, "<NULL>");
 
-	b_left = display_printf(dspbuf,  "%s %p:",
-				state_owner_type_to_str(owner->so_type),
-				owner);
+	nfs4_owner = &owner->so_owner.so_nfs4_owner;
+
+	b_left = display_printf(dspbuf, "%s %p:",
+				state_owner_type_to_str(owner->so_type), owner);
 
 	if (b_left <= 0)
 		return b_left;
