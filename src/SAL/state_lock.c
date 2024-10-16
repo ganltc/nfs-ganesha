@@ -2164,7 +2164,7 @@ state_status_t do_lock_op(struct fsal_obj_handle *obj,
 #ifdef _USE_NLM
 	struct state_nlm_client_t *nlm_client;
 #endif
-	struct nfs_client_id_t *nfs4_clientid;
+	struct nfs_client_id_t *nfs4_clientid = NULL;
 
 	lock->lock_sle_type = FSAL_POSIX_LOCK;
 
