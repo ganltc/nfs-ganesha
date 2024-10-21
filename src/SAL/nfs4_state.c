@@ -738,8 +738,6 @@ enum nfsstat4 release_lock_owner(state_owner_t *owner)
 			/* The file, export, or state must be about to
 			 * die, skip for now.
 			 */
-
-			PTHREAD_MUTEX_unlock(&owner->so_mutex);
 			continue;
 		}
 
