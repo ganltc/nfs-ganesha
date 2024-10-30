@@ -414,7 +414,7 @@ which need not have Export_Id = 0, it just must have Pseudo = "/" and
 Protocols = 4.
 
 In building the Pseudo Filesystem, there is a subtle gotcha. Since NFSv4
-clients actually moount the root of the Pseudo Filesystem and then use LOOKUP
+clients actually mount the root of the Pseudo Filesystem and then use LOOKUP
 to traverse into the actual directory the sysadmin has mounted from the
 client, any EXPORTs from "/" to the desired EXPORT MUST have Protocols = 4
 specified either in EXPORT_DEFAULTS {}, EXPORT {}, or EXPORT { CLIENT {} }.
@@ -436,7 +436,7 @@ And the EXPORTs look something like this:
     {
         Export_Id = 1;
         Path = /export/fs1;
-        Peudo = /export/fs1;
+        Pseudo = /export/fs1;
 
         FSAL
         {
@@ -454,7 +454,7 @@ And the EXPORTs look something like this:
     {
         Export_Id = 1;
         Path = /export/fs1/some/path/fs2;
-        Peudo = /export/fs1/some/path/fs2;
+        Pseudo = /export/fs1/some/path/fs2;
 
         FSAL
         {
@@ -475,7 +475,7 @@ correct way to accomplish this is:
     {
         Export_Id = 1;
         Path = /export/fs1;
-        Peudo = /export/fs1;
+        Pseudo = /export/fs1;
         Protocols=3;
 
        FSAL

@@ -519,7 +519,7 @@ static fsal_status_t create_export(struct fsal_module *module_in,
 	cm_key.cm_secret_key = export->secret_key;
 
 	/* If cmount_path is configured, use that, otherwise use
-	 * CTX_FULLPATH(op_ctx). This allows an export where cmoount_path
+	 * CTX_FULLPATH(op_ctx). This allows an export where cmount_path
 	 * was going to be the same as CTX_FULLPATH(op_ctx) to share the
 	 * cmount with other exports that use the same cmount_path (but then
 	 * MUST be exporting a sub-directory) and cmount_path need not be
