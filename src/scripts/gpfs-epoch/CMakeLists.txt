@@ -21,16 +21,28 @@
 #-------------------------------------------------------------------------------
 
 if(USE_FSAL_GPFS)
-    if (USE_PYTHON2)
-	find_program(PYTHON NAMES "python2")
-    else()
-	find_program(PYTHON NAMES "python3")
-    endif()
-
-  if(PYTHON)
+  if(Python3_FOUND)
     set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
     set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
     set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/build/gpfs_epoch_timestamp")
+
+    # Find Python 3
+    find_package(Python3 REQUIRED)
+
+    # Get the major and minor version of Python 3
+    string(REPLACE "." ";" set_python_version_list ${Python3_VERSION})
+    list(GET set_python_version_list 0 python_major_version)
+    list(GET set_python_version_list 1 python_minor_version)
+
+    # Check if the Python version is less than 3.12
+    if(python_major_version LESS 3 OR (python_major_version EQUAL 3 AND python_minor_version LESS 12))
+         set(USE_LEGACY_PYTHON_INSTALL TRUE)
+    else()
+        set(USE_LEGACY_PYTHON_INSTALL FALSE)
+    endif()
+
+    # Optionally, print the result for debugging
+    message(STATUS "USE_LEGACY_PYTHON_INSTALL is set to: ${USE_LEGACY_PYTHON_INSTALL}")
 
     set(GPFS_EPOCH_SRCS gpfs-epoch.py)
 
@@ -62,19 +74,38 @@ if(USE_FSAL_GPFS)
 
     configure_file(${SETUP_PY_IN} ${SETUP_PY})
 
-    add_custom_command(
-      OUTPUT ${OUTPUT}
-      COMMAND ${CMAKE_COMMAND} -E touch __init__.py
-      COMMAND ${Python3_EXECUTABLE} "${SETUP_PY}"  build
-      COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
-      DEPENDS ${GPFS_EPOCH_SRCS} ${SCRIPTS}
-      )
+    if(USE_LEGACY_PYTHON_INSTALL)
+      add_custom_command(
+        OUTPUT ${OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E touch __init__.py
+        COMMAND ${Python3_EXECUTABLE} "${SETUP_PY}"  build
+        COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
+        DEPENDS ${GPFS_EPOCH_SRCS} ${SCRIPTS}
+        )
+    else()
+      add_custom_command(
+        OUTPUT ${OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E touch __init__.py
+        COMMAND ${Python3_EXECUTABLE}  -m build --wheel --no-isolation .
+        COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
+        DEPENDS ${GPFS_EPOCH_SRCS} ${SCRIPTS}
+        )
+    endif()
 
     add_custom_target(python_gpfs_epoch ALL DEPENDS ${OUTPUT})
 
-    install(
-      CODE
-      "execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMAND ${Python3_EXECUTABLE} ${SETUP_PY} install --skip-build --no-compile --prefix=\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX} --install-scripts=\$ENV{DESTDIR}${LIBEXECDIR}/ganesha)"
-      )
+    if (USE_LEGACY_PYTHON_INSTALL)
+      install(
+        CODE
+        "execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND ${Python3_EXECUTABLE} ${SETUP_PY} install --skip-build --no-compile --prefix=\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX} --install-scripts=\$ENV{DESTDIR}${LIBEXECDIR}/ganesha)"
+        )
+      else()
+      install(
+        CODE
+        "execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND ${Python3_EXECUTABLE} -m installer --destdir \$ENV{DESTDIR} dist/gpfs-${GANESHA_MAJOR_VERSION}${GANESHA_MINOR_VERSION}+${GANESHA_TAG}-py3-none-any.whl)"
+        )
+      endif()
   endif(Python3_FOUND)
 endif(USE_FSAL_GPFS)

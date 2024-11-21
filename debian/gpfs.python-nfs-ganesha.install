@@ -1,1 +1,2 @@
-usr/lib/python*/site-packages
+usr/local/bin/* /usr/bin/
+usr/local/lib/python*/dist-packages

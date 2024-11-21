@@ -88,7 +88,24 @@ SET(RUNTIMEDIR "${SYSSTATEDIR}/run/ganesha" CACHE PATH "Runtime directory (for t
 # Extra version is for naming development/RC.  It is blank in stable branches
 # so it can be available to end-users to name local variants/versions
 # If used, it is always of the form "-whateveryouwant"
-set(GANESHA_EXTRA_VERSION -${GANESHA_TAG})
+
+# Find Python 3
+find_package(Python3 REQUIRED)
+
+# Get the major and minor version of Python 3
+string(REPLACE "." ";" set_python_version_list ${Python3_VERSION})
+list(GET set_python_version_list 0 python_major_version)
+list(GET set_python_version_list 1 python_minor_version)
+
+# Check if the Python version is 3.12 or greater
+if(python_major_version GREATER_EQUAL 3 AND python_minor_version GREATER_EQUAL 12)
+    set(GANESHA_EXTRA_VERSION "+${GANESHA_TAG}")
+else()
+    set(GANESHA_EXTRA_VERSION "-${GANESHA_TAG}")
+endif()
+
+# Optionally, print the result for debugging
+message(STATUS "GANESHA_EXTRA_VERSION is set to: ${GANESHA_EXTRA_VERSION}")
 
 set(GANESHA_VERSION ${GANESHA_MAJOR_VERSION}${GANESHA_MINOR_VERSION}${GANESHA_EXTRA_VERSION})
 set(GANESHA_BASE_VERSION ${GANESHA_MAJOR_VERSION}${GANESHA_MINOR_VERSION})

@@ -28,6 +28,10 @@ case "${UBUNTU_CODENAME}" in
     OS_RELEASE="~${UBUNTU_CODENAME}"
     ;;
 
+    noble)
+    OS_RELEASE="~${UBUNTU_CODENAME}"
+    ;;
+
     *)
     echo "Unsupported build os (${UBUNTU_CODENAME}). Aborting!!!"
     exit 1
