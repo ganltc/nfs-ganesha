@@ -1730,7 +1730,7 @@ static bool gsh_export_update_export(DBusMessageIter *args,
 		status = false;
 		goto out;
 	}
-	LogInfo(COMPONENT_EXPORT, "Adding export from file: %s with %s",
+	LogInfo(COMPONENT_EXPORT, "Updating export from file: %s with %s",
 		file_path, export_expr);
 
 	/* Create a memstream for parser+processing error messages */
