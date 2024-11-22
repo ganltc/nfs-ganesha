@@ -344,22 +344,26 @@ static bool fridgethr_freeze(struct fridgethr *fr,
 	PTHREAD_MUTEX_lock(&fe->ctx.fre_mtx);
 	fe->frozen = true;
 	fe->flags |= fridgethr_flag_available;
-	PTHREAD_MUTEX_unlock(&fr->frt_mtx);
 
 	/* It is a state machine, keep going until we have a
 	   transition that gets us out. */
 	while (true) {
-		if ((fr->p.wake_threads == NULL)
-		    || (fr->command != fridgethr_comm_run)) {
+		bool fre_mtx_locked = true;
+		if ((fr->p.wake_threads == NULL) ||
+		    (fr->command != fridgethr_comm_run)) {
 			if (fr->p.thread_delay > 0) {
 				clock_gettime(CLOCK_REALTIME, &fe->timeout);
 				fe->timeout.tv_sec += fr->p.thread_delay;
+				PTHREAD_MUTEX_unlock(&fr->frt_mtx);
 				rc = pthread_cond_timedwait(&fe->ctx.fre_cv,
 							    &fe->ctx.fre_mtx,
 							    &fe->timeout);
-			} else
+			} else {
+				PTHREAD_MUTEX_unlock(&fr->frt_mtx);
 				rc = pthread_cond_wait(&fe->ctx.fre_cv,
 						       &fe->ctx.fre_mtx);
+			}
+			fre_mtx_locked = false;
 		}
 
 		if (rc == ETIMEDOUT)
@@ -378,6 +382,8 @@ static bool fridgethr_freeze(struct fridgethr *fr,
 			    ~(fridgethr_flag_available |
 			      fridgethr_flag_dispatched);
 			PTHREAD_MUTEX_unlock(&fe->ctx.fre_mtx);
+			if (fre_mtx_locked)
+				PTHREAD_MUTEX_unlock(&fr->frt_mtx);
 			break;
 		}
 
@@ -385,7 +391,9 @@ static bool fridgethr_freeze(struct fridgethr *fr,
 		   we're acquiring the fridge lock. */
 		fe->flags &= ~fridgethr_flag_available;
 		PTHREAD_MUTEX_unlock(&fe->ctx.fre_mtx);
-		PTHREAD_MUTEX_lock(&fr->frt_mtx);
+
+		if (!fre_mtx_locked)
+			PTHREAD_MUTEX_lock(&fr->frt_mtx);
 
 		/* Nothing to do, loop around. */
 		if (fr->command != fridgethr_comm_stop
@@ -395,7 +403,6 @@ static bool fridgethr_freeze(struct fridgethr *fr,
 			PTHREAD_MUTEX_lock(&fe->ctx.fre_mtx);
 			fe->frozen = true;
 			fe->flags |= fridgethr_flag_available;
-			PTHREAD_MUTEX_unlock(&fr->frt_mtx);
 			continue;
 		}
 
