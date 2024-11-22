@@ -43,6 +43,16 @@ echo "Ganesha packages with version : $GANESHA_VERSION_STRING will be generated.
 #Update the changelog file with new Ganesha version and Ubuntu codename
 debchange --newversion $GANESHA_VERSION_STRING --distribution $UBUNTU_CODENAME "NFS Ganesha release $GANESHA_VERSION_STRING for Spectrum Scale" --force-bad-version
 
+# Generate debian/gpfs.python-nfs-ganesha.install based on python version
+if [[ $(python3 -c "import sys; print(sys.version_info >= (3, 12))") == "True" ]]; then
+    # If Python version >= 3.12
+    echo 'usr/local/bin/* /usr/bin/' > debian/gpfs.python-nfs-ganesha.install
+    echo 'usr/local/lib/python*/dist-packages' >> debian/gpfs.python-nfs-ganesha.install
+else
+    # If Python version < 3.12
+    echo 'usr/lib/python*/site-packages' > debian/gpfs.python-nfs-ganesha.install
+fi
+
 rm -r src/debian
 echo "Creating build dependencies ..."
 mk-build-deps --install debian/control
