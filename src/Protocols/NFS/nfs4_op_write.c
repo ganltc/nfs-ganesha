@@ -205,10 +205,8 @@ static enum nfs_req_result op_dswrite(struct nfs_argop4 *op,
 				      compound_data_t *data,
 				      struct nfs_resop4 *resp)
 {
-	WRITE4args * const arg_WRITE4 = &op->nfs_argop4_u.opwrite;
-	WRITE4res * const res_WRITE4 = &resp->nfs_resop4_u.opwrite;
-	/* NFSv4 return code */
-	nfsstat4 nfs_status = 0;
+	WRITE4args *const arg_WRITE4 = &op->nfs_argop4_u.opwrite;
+	WRITE4res *const res_WRITE4 = &resp->nfs_resop4_u.opwrite;
 
 	res_WRITE4->status = op_ctx->ctx_pnfs_ds->s_ops.dsh_write(
 				data->current_ds,
@@ -221,7 +219,6 @@ static enum nfs_req_result op_dswrite(struct nfs_argop4 *op,
 				&res_WRITE4->WRITE4res_u.resok4.writeverf,
 				&res_WRITE4->WRITE4res_u.resok4.committed);
 
-	res_WRITE4->status = nfs_status;
 	return nfsstat4_to_nfs_req_result(res_WRITE4->status);
 }
 
