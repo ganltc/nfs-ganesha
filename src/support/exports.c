@@ -1183,16 +1183,29 @@ static int export_commit_common(void *node, void *link_mem, void *self_struct,
 
 		if (strcmp_null(export->cfg_pseudopath,
 				probe_exp->cfg_pseudopath) != 0) {
-			/* Pseudo does not match, mark to unmount old and
-			 * mount at new location.
+			/* Pseudo does not match, check whether is duplicated.
+			 * If not, mark to unmount old and remount at new
+			 * location.
 			 */
-			LogInfo(COMPONENT_EXPORT,
-				"Pseudo for export %d changing to %s from to %s",
-				export->export_id,
-				export->cfg_pseudopath,
-				probe_exp->cfg_pseudopath);
-			mount_status_changed |= true;
-			mount_export |= export_can_be_mounted(export);
+			struct gsh_export *dup_pseudo_exp =
+				get_gsh_export_by_pseudo(
+					export->cfg_pseudopath, true);
+			if (dup_pseudo_exp) {
+				LogCrit(COMPONENT_CONFIG,
+					"Pseudo path (%s) is a duplicate",
+					export->cfg_pseudopath);
+				err_type->invalid = true;
+				errcnt++;
+				put_gsh_export(dup_pseudo_exp);
+			} else {
+				LogInfo(COMPONENT_EXPORT,
+					"Pseudo for export %d changing to %s from %s",
+					export->export_id,
+					export->cfg_pseudopath,
+					probe_exp->cfg_pseudopath);
+				mount_status_changed |= true;
+				mount_export |= export_can_be_mounted(export);
+			}
 		}
 
 		if (strcmp_null(export->cfg_fullpath,
