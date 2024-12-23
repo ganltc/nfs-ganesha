@@ -350,6 +350,8 @@ Active_krb5(bool, default false)
 NFSv4 {}
 --------------------------------------------------------------------------------
 
+Sticky_Grace(bool, default false)
+    Whether to disable the sticky grace.
 
 Graceless(bool, default false)
     Whether to disable the NFSv4 grace period.

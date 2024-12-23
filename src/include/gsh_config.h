@@ -539,6 +539,9 @@ typedef struct nfs_core_param {
 					 NFSV4_MINOR_VERSION_TWO)
 
 typedef struct nfs_version4_parameter {
+	/** Whether to disable sticky grace. Defaults to true and
+		can be disabled with sticky_grace*/
+	bool sticky_grace;
 	/** Whether to disable the NFSv4 grace period.  Defaults to
 	    false and settable with Graceless. */
 	bool graceless;

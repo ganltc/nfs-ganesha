@@ -223,6 +223,8 @@ NFS_KRB5 {}
 NFSV4 {}
 --------
 
+	Sticky_Grace(bool, default false)
+
 	Graceless(bool, default false)
 
 	Lease_Lifetime(uint32, range 1 to 120, default 60)

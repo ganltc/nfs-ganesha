@@ -152,13 +152,22 @@ void nfs4_cleanup_clid_entries(void)
 }
 
 /*
- * Check the current status of the grace period against what the caller needs.
+ * If Sticky_garce enabled, Check the current status of the grace
+ * period against what the caller needs.
  * If it's different then return false without taking a reference. If a change
  * has been requested, then we also don't want to give out a reference.
+ * Else return true if in grace period or return false if not.
  */
 bool nfs_get_grace_status(bool want_grace)
 {
 	uint32_t cur, pro, old;
+	/* check if sticky grace is disabled,
+	 * if we are in grace period and return*/
+	if (!nfs_param.nfsv4_param.sticky_grace) {
+		cur = atomic_fetch_uint32_t(&grace_status);
+
+		return want_grace == (bool)(cur & GRACE_STATUS_ACTIVE);
+	}
 
 	old = atomic_fetch_uint32_t(&grace_status);
 	do {
@@ -180,12 +189,18 @@ bool nfs_get_grace_status(bool want_grace)
 }
 
 /*
- * Put grace status. If the refcount goes to zero, and a change was requested,
+ * Put grace status function is a no-op without sticky_grace.
+ * Else if sticky_grace enabled, If the refcount goes to zero,
+ * and a change was requested,
  * then wake the reaper thread to do its thing.
  */
 void nfs_put_grace_status(void)
 {
 	uint32_t cur;
+
+	/* check if sticky grace is disabled, to skip decrementing ref count*/
+	if (!nfs_param.nfsv4_param.sticky_grace)
+		return; /* no sticky grace mode, no decrementing ref count*/
 
 	cur = __sync_sub_and_fetch(&grace_status, GRACE_STATUS_REF_INCREMENT);
 	if (cur & GRACE_STATUS_CHANGE_REQ &&
@@ -212,8 +227,10 @@ nfs_lift_grace_locked(void)
 		__sync_synchronize();
 		/* Now change the actual status */
 		cur = __sync_and_and_fetch(&grace_status,
-			~(GRACE_STATUS_ACTIVE|GRACE_STATUS_CHANGE_REQ));
-		assert(!(cur & GRACE_STATUS_COUNT_MASK));
+					   ~(GRACE_STATUS_ACTIVE |
+					     GRACE_STATUS_CHANGE_REQ));
+		assert(!nfs_param.nfsv4_param.sticky_grace ||
+		       !(cur & GRACE_STATUS_COUNT_MASK));
 		LogEvent(COMPONENT_STATE, "NFS Server Now NOT IN GRACE");
 	}
 }
@@ -284,11 +301,14 @@ int nfs_start_grace(nfs_grace_start_t *gsp)
 			break;
 
 		/*
-		 * Are there outstanding refs? If so, then set the change req
+		 * Are there outstanding
+		 * refs(check only if sticky grace is enabled)?
+		 * If so, then set the change req
 		 * flag and nothing else. If not, then clear the change req
 		 * flag and flip the active bit.
 		 */
-		if (old & GRACE_STATUS_COUNT_MASK) {
+		if ((old & GRACE_STATUS_COUNT_MASK) &
+		    nfs_param.nfsv4_param.sticky_grace) {
 			pro = old | GRACE_STATUS_CHANGE_REQ;
 		} else {
 			pro = old | GRACE_STATUS_ACTIVE;
@@ -302,11 +322,13 @@ int nfs_start_grace(nfs_grace_start_t *gsp)
 	} while (cur != old);
 
 	/*
-	 * If we were not in a grace period before and there were still
-	 * references outstanding, then we can't do anything else.
+	 * If sticky_garce is enabled and we were not in a grace period
+	 * before and there were still references outstanding,
+	 * then we can't do anything else.
 	 * Fail with -EAGAIN so that caller can retry if needed.
 	 */
-	if (!was_grace && (old & GRACE_STATUS_COUNT_MASK)) {
+	if (!was_grace && (old & GRACE_STATUS_COUNT_MASK) &&
+	    nfs_param.nfsv4_param.sticky_grace) {
 		LogEvent(COMPONENT_STATE,
 			 "Unable to start grace, grace status 0x%x",
 			 grace_status);
@@ -528,30 +550,40 @@ void nfs_try_lift_grace(void)
 	 * Clustered backends may need extra checks before they can do so. If
 	 * the backend does not implement a try_lift_grace operation, then we
 	 * assume there are no external conditions and that it's always ok.
+	 *
+	 * If sticky grace is disabled, no additional checks or status updates
+	 * are performed; the grace period is lifted relying
+	 * only on backend-specific checks (if any).
 	 */
 	if (!in_grace) {
 		cur = atomic_fetch_uint32_t(&grace_status);
-		do {
-			old = cur;
+		/* no extra check if sticky grace is disabled.*/
+		if (nfs_param.nfsv4_param.sticky_grace) {
+			do {
+				old = cur;
 
-			/* Are we already done? Exit if so */
-			if (!(cur & GRACE_STATUS_ACTIVE)) {
-				PTHREAD_MUTEX_unlock(&grace_mutex);
-				return;
-			}
+				/* Are we already done? Exit if so */
+				if (!(cur & GRACE_STATUS_ACTIVE)) {
+					PTHREAD_MUTEX_unlock(&grace_mutex);
+					return;
+				}
 
-			/* Record that a change has now been requested */
-			pro = old | GRACE_STATUS_CHANGE_REQ;
-			if (pro == old)
-				break;
-			cur = __sync_val_compare_and_swap(&grace_status,
-							  old, pro);
-		} while (cur != old);
+				/* Record that a change
+				 * has now been requested */
+				pro = old | GRACE_STATUS_CHANGE_REQ;
+				if (pro == old)
+					break;
+				cur = __sync_val_compare_and_swap(&grace_status,
+								  old, pro);
+			} while (cur != old);
 
-		/* Otherwise, go ahead and lift if we can */
-		if (!(old & GRACE_STATUS_COUNT_MASK) &&
-		    (!recovery_backend->try_lift_grace ||
-		     recovery_backend->try_lift_grace()))
+			/* Otherwise, go ahead and lift if we can */
+			if (!(old & GRACE_STATUS_COUNT_MASK) &&
+			    (!recovery_backend->try_lift_grace ||
+			     recovery_backend->try_lift_grace()))
+				nfs_lift_grace_locked();
+		} else if (!recovery_backend->try_lift_grace ||
+			   recovery_backend->try_lift_grace())
 			nfs_lift_grace_locked();
 	}
 	PTHREAD_MUTEX_unlock(&grace_mutex);
