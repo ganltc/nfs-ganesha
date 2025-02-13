@@ -268,14 +268,14 @@ INCLUDE_URL  {URLTYPES}:\/\/[a-zA-Z0-9\-\.\_&=\/]+
 <YY_INIT>{ID_CHARS} { /* first block */
 	/* identifier */
 	DEBUG_LEX("[block:%s]\n",yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	BEGIN DEFINITION;
 	return IDENTIFIER;
 }
 
 <DEFINITION>{ID_CHARS} {
 	DEBUG_LEX("[id:%s",yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return IDENTIFIER;
 }
 
@@ -318,7 +318,7 @@ INCLUDE_URL  {URLTYPES}:\/\/[a-zA-Z0-9\-\.\_&=\/]+
 
 <TERM>{DQUOTE}  {  /* start of a double quote string */
 	DEBUG_LEX("quote value:<%s>", yytext);
-	yylval->token = save_token(yytext, true, stp);
+	yylval->token = save_token(yytext, true, true, stp);
 	return DQUOTE;
 }
 
@@ -326,67 +326,67 @@ INCLUDE_URL  {URLTYPES}:\/\/[a-zA-Z0-9\-\.\_&=\/]+
 
 <TERM>{SQUOTE}   { /* start of a single quote string */
 	DEBUG_LEX("lit value:<%s>", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, true, false, stp);
 	return SQUOTE;
 }
 
 <TERM>{YES}|{TRUE}|{ON}  { /* a boolean TRUE */
 	DEBUG_LEX("boolean TRUE:%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOK_TRUE;
 }
 
 <TERM>{NO}|{FALSE}|{OFF}  { /* a boolean FALSE */
 	DEBUG_LEX("boolean FALSE:%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOK_FALSE;
 }
 
 <TERM>{MINUS}|{TWIDDLE} { /* an arithmetic op */
 	DEBUG_LEX(" arith op:%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOK_ARITH_OP;
 }
 
 <TERM>{NINEP}  { /* "9P" is here to take precedence over numbers, this is a special */
 	DEBUG_LEX("token value:%s",yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOKEN;
 }
 
 <TERM>({OCTNUM}|{DECNUM}|{HEXNUM}){DOT}({OCTNUM}|{DECNUM}|{HEXNUM}) { /* an FSID */
 	DEBUG_LEX(" FSID :%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOK_FSID;
 }
 
 <TERM>{OCTNUM}  { /* an octal number */
 	DEBUG_LEX(" octal number:%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOK_OCTNUM;
 }
 
 <TERM>{HEXNUM}  { /* a hexadecimal number */
 	DEBUG_LEX(" hex number:%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOK_HEXNUM;
 }
 
 <TERM>{DECNUM}  { /* a decimal number */
 	DEBUG_LEX(" dec number:%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOK_DECNUM;
 }
 
 <TERM>{SPLAT}|(0{DOT}0{DOT}0{DOT}0)  { /* v4 address wildcard, ganesha only, not IETF */
 	DEBUG_LEX(" V4 any:%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOK_V4_ANY;
 }
 
 <TERM>{IPV4ADDR}{CIDR}?  { /* V4 CIDR */
 	DEBUG_LEX(" IPv4 :%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	if (index(yylval->token, '/') == NULL)
 		return TOK_V4ADDR;
 	else
@@ -398,7 +398,7 @@ INCLUDE_URL  {URLTYPES}:\/\/[a-zA-Z0-9\-\.\_&=\/]+
 
 <TERM>{IPV6ADDR}{CIDR}?  { /* V6 CIDR */
 	DEBUG_LEX(" IPv6 :%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	if (index(yylval->token, '/') == NULL)
 		return TOK_V6ADDR;
 	else
@@ -407,7 +407,7 @@ INCLUDE_URL  {URLTYPES}:\/\/[a-zA-Z0-9\-\.\_&=\/]+
 
 <TERM>{AT}{NETGROUP_CHARS} { /* a netgroup used for clients */
 	DEBUG_LEX(" netgroup :%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOK_NETGROUP;
 }
 
@@ -417,19 +417,19 @@ INCLUDE_URL  {URLTYPES}:\/\/[a-zA-Z0-9\-\.\_&=\/]+
 
 <TERM>{PATHNAME}|{LONGPATH}  { /* a POSIX pathname */
 	DEBUG_LEX("pathname:%s", yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOK_PATH;
 }
 
 <TERM>{TOKEN_CHARS}  { /* start of a number or label/tag */
 	DEBUG_LEX("token value:%s",yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return TOKEN;
 }
 
 <TERM>{WILDCARD}  { /* start of a number or label/tag as glob(7) string */
 	DEBUG_LEX("token value:%s",yytext);
-	yylval->token = save_token(yytext, false, stp);
+	yylval->token = save_token(yytext, false, false, stp);
 	return REGEX_TOKEN;
 }
 
@@ -446,7 +446,7 @@ INCLUDE_URL  {URLTYPES}:\/\/[a-zA-Z0-9\-\.\_&=\/]+
 	config_parse_error(yylloc, stp,
 		"Unexpected character (%s)", yytext);
 	stp->err_type->scan = true;
-	yylval->token = save_token(yytext, false, stp); /* for error rpt */
+	yylval->token = save_token(yytext, false, false, stp); /* for error rpt */
 	return _ERROR_;
 }
 

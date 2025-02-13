@@ -124,7 +124,7 @@ struct parser_state {
 	struct config_error_type *err_type;
 };
 
-char *save_token(char *token, bool esc, struct parser_state *st);
+char *save_token(char *token, bool quot, bool esc, struct parser_state *st);
 int ganesha_yyparse(struct parser_state *st);
 int ganeshun_yy_init_parser(char *srcfile,
 			   struct parser_state *st);

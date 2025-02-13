@@ -70,54 +70,45 @@ avltree_inline_hash_lookup(const struct avltree_node *key)
 /**
  *  Sanitize the token string
  */
-void sanitize_token_str(char *token, int esc)
+void sanitize_token_str(char *token, bool esc)
 {
 	char *sp, *dp;
 	int c;
-	size_t token_len;
 
 	sp = token;
 	dp = token; /* Change dp to point to token itself */
-	token_len = strlen(token);
 
 	c = *sp++;
 
-	if (esc) {
-		if (c == '\"')
-			c = *sp++; /* gobble leading '"' from regexp */
+	if (c == '\"' || c == '\'')
+		c = *sp++; /* gobble leading '"' or "'" from regexp */
 
-		while (c != '\0') {
-			if (c == '\\') {
-				c = *sp++;
-				if (c == '\0')
-					break;
-				switch (c) {
-				case 'n':
-					c = '\n';
-					break;
-				case 't':
-					c = '\t';
-					break;
-				case 'r':
-					c = '\r';
-					break;
-				default:
-					break;
-				}
-			} else if (c == '"' && *sp == '\0')
-				break; /* skip trailing '"' from regexp */
-
-			*dp++ = c;
+	while (c != '\0') {
+		if (esc && c == '\\') {
 			c = *sp++;
-		}
-		*dp = '\0'; /* Null-terminate the string*/
-	} else {
-		if (*token == '\'') /* skip and chomp "'" in an SQUOTE */
-			token++;
+			if (c == '\0')
+				break;
+			switch (c) {
+			case 'n':
+				c = '\n';
+				break;
+			case 't':
+				c = '\t';
+				break;
+			case 'r':
+				c = '\r';
+				break;
+			default:
+				break;
+			}
+		} else if ((c == '"' || c == '\'') && *sp == '\0')
+			break; /* skip trailing '"' from regexp */
 
-		if (token[token_len - 1] == '\'')
-			token[token_len - 1] = '\0';
+		*dp++ = c;
+		c = *sp++;
 	}
+
+	*dp = '\0'; /* Null-terminate the string*/
 }
 
 /**
@@ -130,17 +121,20 @@ void sanitize_token_str(char *token, int esc)
  * be filtered.  Turn the escaped non-printable into the non-printable.
  *
  * @param token [IN] pointer to the yytext token from flex
+ * @param quot [IN] bool, quoted token if true
  * @param esc [IN] bool, filter if true
  * @param st [IN] pointer to parser state
  * @return pointer to persistent storage for token or NULL;
  */
-char *save_token(char *token, bool esc, struct parser_state *st)
+char *save_token(char *token, bool quot, bool esc, struct parser_state *st)
 {
 	struct token_tab *ret_tok, *new_tok;
 	u_int64_t hash;
 	size_t token_len;
 
-	sanitize_token_str(token, esc);
+	if (quot)
+		sanitize_token_str(token, esc);
+
 	token_len = strlen(token);
 	hash = CityHash64(token, token_len);
 
