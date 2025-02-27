@@ -274,7 +274,7 @@ open_by_handle(struct fsal_obj_handle *obj_hdl, struct state_t *state,
 		goto exit;
 	}
 
-	if (createmode >= FSAL_EXCLUSIVE || (truncated && attrs_out)) {
+	if (attrs_out && (createmode >= FSAL_EXCLUSIVE || truncated)) {
 		/* NOTE: won't come in here when called from gpfs_reopen2...
 		 *       truncated might be set, but attrs_out will be NULL.
 		 */
