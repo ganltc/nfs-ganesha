@@ -782,7 +782,8 @@ int display_owner(struct display_buffer *dspbuf, state_owner_t *owner)
  *
  * @param[in] owner The owner to acquire
  */
-void inc_state_owner_ref(state_owner_t *owner)
+void _inc_state_owner_ref(state_owner_t *owner, char *file, int line,
+			  char *func)
 {
 	char str[LOG_BUFF_LEN] = "\0";
 	struct display_buffer dspbuf = {sizeof(str), str, str};
@@ -795,6 +796,16 @@ void inc_state_owner_ref(state_owner_t *owner)
 	}
 
 	refcount = atomic_inc_int32_t(&owner->so_refcount);
+
+	if (isInfo(COMPONENT_STATE) &&
+	    owner->so_type == STATE_CLIENTID_OWNER_NFSV4) {
+		display_owner(&dspbuf, owner);
+		DisplayLogComponentLevel(COMPONENT_STATE, file, line, func,
+					 NIV_INFO,
+					 "Increment so_refcount now=%" PRId32
+					 " {%s}",
+					 owner->so_refcount, str);
+	}
 
 	if (str_valid)
 		LogFullDebug(COMPONENT_STATE,
@@ -887,7 +898,8 @@ hash_table_t *get_state_owner_hash_table(state_owner_t *owner)
  *
  * @param[in] owner The owner to release
  */
-void dec_state_owner_ref(state_owner_t *owner)
+void _dec_state_owner_ref(state_owner_t *owner, char *file, int line,
+			  char *func)
 {
 	char str[LOG_BUFF_LEN] = "\0";
 	struct display_buffer dspbuf = {sizeof(str), str, str};
@@ -905,6 +917,16 @@ void dec_state_owner_ref(state_owner_t *owner)
 	}
 
 	refcount = atomic_dec_int32_t(&owner->so_refcount);
+
+	if (isInfo(COMPONENT_STATE) &&
+	    owner->so_type == STATE_CLIENTID_OWNER_NFSV4) {
+		display_owner(&dspbuf, owner);
+		DisplayLogComponentLevel(COMPONENT_STATE, file, line, func,
+					 NIV_INFO,
+					 "Decrement so_refcount now=%" PRId32
+					 " {%s}",
+					 owner->so_refcount, str);
+	}
 
 	if (refcount != 0) {
 		if (str_valid)
