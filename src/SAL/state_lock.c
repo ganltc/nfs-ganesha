@@ -1828,8 +1828,13 @@ void process_blocked_lock_upcall(state_block_data_t *block_data)
 
 	STATELOCK_lock(lock_entry->sle_obj);
 
+	if (glist_null(&lock_entry->sle_list)) {
+		LogEntry("Received up-call for lock entry that was already removed from the lock list Ignoring", lock_entry);
+		goto out_upcall;
+	}
 	try_to_grant_lock(lock_entry);
 
+ out_upcall:
 	STATELOCK_unlock(lock_entry->sle_obj);
 
 	/* We are done with the lock_entry, release the reference now. */
@@ -1890,6 +1895,13 @@ void cancel_blocked_lock(struct fsal_obj_handle *obj,
 {
 	state_cookie_entry_t *cookie = NULL;
 	state_status_t state_status;
+
+	/* If lock list is empty, there really isn't any work for us to do. */
+	if (glist_empty(&obj->state_hdl->file.lock_list)) {
+		LogDebug(COMPONENT_STATE,
+			"Cancel success on file with no locks");
+		return;
+	}
 
 	/* Mark lock as canceled */
 	LogEntry("Cancelling blocked", lock_entry);
@@ -2061,6 +2073,7 @@ state_status_t state_release_grant(state_cookie_entry_t *cookie_entry)
 	lock_entry = cookie_entry->sce_lock_entry;
 	obj = cookie_entry->sce_obj;
 
+	obj->obj_ops->get_ref(obj);
 	STATELOCK_lock(obj);
 
 	/* We need to make sure lock is only "granted" once...
@@ -2105,7 +2118,7 @@ state_status_t state_release_grant(state_cookie_entry_t *cookie_entry)
 	grant_blocked_locks(obj->state_hdl);
 
 	STATELOCK_unlock(obj);
-
+	obj->obj_ops->get_ref(obj);
 	return status;
 }
 
@@ -3685,9 +3698,15 @@ void cancel_all_nlm_blocked(void)
 
 		cancel_blocked_lock(found_entry->sle_obj, found_entry);
 
-		gsh_free(pblock->sbd_blocked_cookie);
-		gsh_free(found_entry->sle_block_data);
-		found_entry->sle_block_data = NULL;
+		if (pblock->sbd_blocked_cookie != NULL) {
+			gsh_free(pblock->sbd_blocked_cookie);
+			pblock->sbd_blocked_cookie = NULL;
+		}
+
+		if (found_entry->sle_block_data != NULL) {
+			gsh_free(found_entry->sle_block_data);
+			found_entry->sle_block_data = NULL;
+		}
 
 		LogEntry("Canceled Lock", found_entry);
 
