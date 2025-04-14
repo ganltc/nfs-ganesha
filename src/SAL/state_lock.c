@@ -1384,11 +1384,16 @@ state_status_t state_add_grant_cookie(struct fsal_obj_handle *obj,
 	struct display_buffer dspbuf = {sizeof(str), str, str};
 	bool str_valid = false;
 	state_status_t status = 0;
+	/* structure to hold retained state */
+	struct hash_latch latch;
+	/* Stored return code */
+	hash_error_t rc = 0;
 
 	*cookie_entry = NULL;
 
-	if (lock_entry->sle_block_data == NULL || cookie == NULL
-	    || cookie_size == 0) {
+	if (lock_entry->sle_block_data == NULL || cookie == NULL ||
+	    cookie_size == 0 ||
+	    lock_entry->sle_block_data->sbd_grant_type == STATE_GRANT_NONE) {
 		/* Something's wrong with this entry */
 		status = STATE_INCONSISTENT_ENTRY;
 		return status;
@@ -1418,17 +1423,16 @@ state_status_t state_add_grant_cookie(struct fsal_obj_handle *obj,
 		str_valid = true;
 	}
 
-	if (hashtable_test_and_set(ht_lock_cookies,
-				   &buffkey,
-				   &buffval,
-				   HASHTABLE_SET_HOW_SET_NO_OVERWRITE)
-	    != HASHTABLE_SUCCESS) {
-		gsh_free(hash_entry);
-		if (str_valid)
-			LogFullDebug(COMPONENT_STATE,
-				     "Lock Cookie {%s} HASH TABLE ERROR", str);
+	rc = hashtable_getlatch(ht_lock_cookies, &buffkey, NULL, true, &latch);
+
+	if (rc != HASHTABLE_ERROR_NO_SUCH_KEY) {
+		if (rc == HASHTABLE_SUCCESS) {
+			/* The key already exists, no reason to proceed */
+			hashtable_releaselatched(ht_lock_cookies, &latch);
+		}
+
 		status = STATE_HASH_TABLE_ERROR;
-		return status;
+		goto error;
 	}
 
 	if (str_valid)
@@ -1436,7 +1440,7 @@ state_status_t state_add_grant_cookie(struct fsal_obj_handle *obj,
 
 	switch (lock_entry->sle_block_data->sbd_grant_type) {
 	case STATE_GRANT_NONE:
-		/* Shouldn't get here */
+		/* Can't get here, but handle anyway */
 		status = STATE_INCONSISTENT_ENTRY;
 		break;
 
@@ -1475,9 +1479,6 @@ state_status_t state_add_grant_cookie(struct fsal_obj_handle *obj,
 	}
 
 	if (status != STATE_SUCCESS) {
-		struct gsh_buffdesc buffused_key;
-		hash_error_t err;
-
 		/* Lock will be returned to right blocking type if it is
 		 * still blocking. We could lose a block if we failed for
 		 * any other reason
@@ -1494,33 +1495,45 @@ state_status_t state_add_grant_cookie(struct fsal_obj_handle *obj,
 				 state_err_str(status));
 
 		LogEntry("Entry", lock_entry);
-
-		/* Remove the hashtable entry */
-		err = HashTable_Del(ht_lock_cookies, &buffkey, &buffused_key,
-				    &buffval);
-
-		if (err != HASHTABLE_SUCCESS) {
-			LogCrit(COMPONENT_STATE,
-				 "Failure to delete lock cookie %s",
-				 hash_table_err_to_str(err));
-		}
-
-		/* And release the cookie without unblocking the lock.
-		 * grant_blocked_locks() will decide whether to keep or
-		 * free the block.
-		 */
-		free_cookie(hash_entry, false);
-
-		return status;
+		hashtable_releaselatched(ht_lock_cookies, &latch);
+		goto error;
 	}
 
 	/* Increment lock entry reference count and link it to the cookie */
 	lock_entry_inc_ref(lock_entry);
 	lock_entry->sle_block_data->sbd_blocked_cookie = hash_entry;
-	*cookie_entry = hash_entry;
 
 	/* Also take an obj reference. */
 	obj->obj_ops->get_ref(obj);
+
+	rc = hashtable_setlatched(ht_lock_cookies, &buffkey, &buffval, &latch,
+				  false, NULL, NULL);
+
+	if (rc == HASHTABLE_SUCCESS) {
+		/* We're done - cookie is all set up */
+		*cookie_entry = hash_entry;
+		return status;
+	}
+
+	/* This really should not fail... */
+	if (!str_valid)
+		display_lock_cookie_entry(&dspbuf, hash_entry);
+
+	LogCrit(COMPONENT_STATE, "Lock Cookie {%s} unexpected failure %s", str,
+		hash_table_err_to_str(rc));
+	lock_entry_dec_ref(lock_entry);
+	lock_entry->sle_block_data->sbd_blocked_cookie = NULL;
+	obj->obj_ops->put_ref(obj);
+	status = STATE_HASH_TABLE_ERROR;
+
+error:
+
+	gsh_free(hash_entry);
+	gsh_free(buffkey.addr);
+
+	if (str_valid)
+		LogFullDebug(COMPONENT_STATE, "Lock Cookie {%s} %s", str,
+			     state_err_str(status));
 	return status;
 }
 
@@ -1815,8 +1828,13 @@ void process_blocked_lock_upcall(state_block_data_t *block_data)
 
 	STATELOCK_lock(lock_entry->sle_obj);
 
+	if (glist_null(&lock_entry->sle_list)) {
+		LogEntry("Received up-call for lock entry that was already removed from the lock list Ignoring", lock_entry);
+		goto out_upcall;
+	}
 	try_to_grant_lock(lock_entry);
 
+ out_upcall:
 	STATELOCK_unlock(lock_entry->sle_obj);
 
 	/* We are done with the lock_entry, release the reference now. */
@@ -1877,6 +1895,13 @@ void cancel_blocked_lock(struct fsal_obj_handle *obj,
 {
 	state_cookie_entry_t *cookie = NULL;
 	state_status_t state_status;
+
+	/* If lock list is empty, there really isn't any work for us to do. */
+	if (glist_empty(&obj->state_hdl->file.lock_list)) {
+		LogDebug(COMPONENT_STATE,
+			"Cancel success on file with no locks");
+		return;
+	}
 
 	/* Mark lock as canceled */
 	LogEntry("Cancelling blocked", lock_entry);
@@ -2048,6 +2073,7 @@ state_status_t state_release_grant(state_cookie_entry_t *cookie_entry)
 	lock_entry = cookie_entry->sce_lock_entry;
 	obj = cookie_entry->sce_obj;
 
+	obj->obj_ops->get_ref(obj);
 	STATELOCK_lock(obj);
 
 	/* We need to make sure lock is only "granted" once...
@@ -2092,7 +2118,7 @@ state_status_t state_release_grant(state_cookie_entry_t *cookie_entry)
 	grant_blocked_locks(obj->state_hdl);
 
 	STATELOCK_unlock(obj);
-
+	obj->obj_ops->get_ref(obj);
 	return status;
 }
 
@@ -3672,9 +3698,15 @@ void cancel_all_nlm_blocked(void)
 
 		cancel_blocked_lock(found_entry->sle_obj, found_entry);
 
-		gsh_free(pblock->sbd_blocked_cookie);
-		gsh_free(found_entry->sle_block_data);
-		found_entry->sle_block_data = NULL;
+		if (pblock->sbd_blocked_cookie != NULL) {
+			gsh_free(pblock->sbd_blocked_cookie);
+			pblock->sbd_blocked_cookie = NULL;
+		}
+
+		if (found_entry->sle_block_data != NULL) {
+			gsh_free(found_entry->sle_block_data);
+			found_entry->sle_block_data = NULL;
+		}
 
 		LogEntry("Canceled Lock", found_entry);
 
