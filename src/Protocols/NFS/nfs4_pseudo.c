@@ -560,7 +560,7 @@ void create_pseudofs(void)
 		if (export == NULL)
 			break;
 		if (!pseudo_mount_export(export))
-			LogFatal(COMPONENT_EXPORT,
+			LogCrit(COMPONENT_EXPORT,
 				 "Could not complete creating PseudoFS");
 	}
 	release_op_context();
