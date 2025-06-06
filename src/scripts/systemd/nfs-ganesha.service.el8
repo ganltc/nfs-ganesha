@@ -31,6 +31,7 @@ EnvironmentFile=-/run/sysconfig/ganesha
 ExecStart=/bin/bash -c "${ENV_OPTIONS} ${MALLOC_ARENA_MAX} ${NUMACTL} ${NUMAOPTS} /usr/bin/gpfs.ganesha.nfsd -C ${OPTIONS} ${EPOCH}"
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStop=/bin/dbus-send --system   --dest=org.ganesha.nfsd --type=method_call /org/ganesha/nfsd/admin org.ganesha.nfsd.admin.shutdown
+TimeoutStopSec=15
 
 [Install]
 WantedBy=multi-user.target
