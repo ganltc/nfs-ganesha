@@ -8,11 +8,14 @@
 
 CONFIGFILE=/etc/sysconfig/ganesha
 RUNCONFIG=/run/sysconfig/ganesha
-if [ ! -e $(command dirname ${CONFIGFILE} 2>/dev/null) ]; then
-	# Debian/Ubuntu
-	CONFIGFILE=/etc/ganesha/nfs-ganesha
-	RUNCONFIG=/etc/default/nfs-ganesha
-fi
+
+# Scale uses /etc/sysconfg/ganesha for NOFILE change on all distros
+# So we want to keep this in the short term.
+#if [ ! -e $(command dirname ${CONFIGFILE} 2>/dev/null) ]; then
+#	# Debian/Ubuntu
+#	CONFIGFILE=/etc/ganesha/nfs-ganesha
+#	RUNCONFIG=/etc/default/nfs-ganesha
+#fi
 
 if [ -r ${CONFIGFILE} ]; then
 	. ${CONFIGFILE}
