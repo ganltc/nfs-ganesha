@@ -13,8 +13,8 @@
 [Unit]
 Description=NFS-Ganesha file server
 Documentation=http://github.com/nfs-ganesha/nfs-ganesha/wiki
-After=rpcbind.service nfs-ganesha-lock.service nfs-ganesha-config.service
-Wants=rpcbind.service nfs-ganesha-lock.service nfs-ganesha-config.service
+After=rpcbind.service nfs-ganesha-config.service
+Wants=rpcbind.service nfs-ganesha-config.service
 Conflicts=nfs.target
 
 
@@ -22,14 +22,14 @@ Conflicts=nfs.target
 Type=forking
 # Let systemd create /run/ganesha, /var/log/ganesha and /var/lib/nfs/ganesha
 # directories
-RuntimeDirectory=ganesha
-LogsDirectory=ganesha
-StateDirectory=nfs/ganesha
+# RuntimeDirectory=ganesha
+# LogsDirectory=ganesha
+# StateDirectory=nfs/ganesha
 EnvironmentFile=-/run/sysconfig/ganesha
-ExecStart=/bin/bash -c "${NUMACTL} ${NUMAOPTS} /usr/bin/ganesha.nfsd -C ${OPTIONS} ${EPOCH} ${GNODEID}"
+ExecStart=/bin/bash -c "${ENV_OPTIONS} ${MALLOC_ARENA_MAX} ${NUMACTL} ${NUMAOPTS} /usr/bin/gpfs.ganesha.nfsd -C ${OPTIONS} ${EPOCH}"
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStop=/bin/dbus-send --system   --dest=org.ganesha.nfsd --type=method_call /org/ganesha/nfsd/admin org.ganesha.nfsd.admin.shutdown
+TimeoutStopSec=15
 
 [Install]
 WantedBy=multi-user.target
-Also=nfs-ganesha-lock.service
