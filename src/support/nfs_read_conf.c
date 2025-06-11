@@ -289,7 +289,7 @@ static struct config_item core_params[] = {
 #endif
 	CONF_ITEM_UI32("rpc_ioq_thrdmin", 2, 1024 * 128, 2, nfs_core_param,
 		       rpc.ioq_thrd_min),
-	CONF_ITEM_UI32("RPC_Ioq_ThrdMax", 2, 1024 * 128, 200, nfs_core_param,
+	CONF_ITEM_UI32("RPC_Ioq_ThrdMax", 2, 1024 * 128, 512, nfs_core_param,
 		       rpc.ioq_thrd_max),
 	CONF_ITEM_UI32("RPC_GSS_Npart", 1, 1021, 13, nfs_core_param,
 		       rpc.gss.ctx_hash_partitions),
@@ -361,7 +361,7 @@ static struct config_item core_params[] = {
 		      dbus_name_prefix),
 	CONF_ITEM_UI32("Max_Uid_To_Group_Reqs", 0, INT32_MAX, 0, nfs_core_param,
 		       max_uid_to_grp_reqs),
-	CONF_ITEM_BOOL("Enable_V3fh_Validation_For_V4", false, nfs_core_param,
+	CONF_ITEM_BOOL("Enable_V3fh_Validation_For_V4", true, nfs_core_param,
 		       enable_v3_fh_for_v4),
 	CONF_ITEM_UI32("Readdir_Res_Size", 4096, FSAL_MAXIOSIZE, 32 * 1024,
 		       nfs_core_param, readdir_res_size),

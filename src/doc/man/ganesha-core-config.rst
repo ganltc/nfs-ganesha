@@ -345,7 +345,7 @@ MaxRPCRdmaCredits(uint32, range 1 to 4096, default 64)
     Max credits of RDMA channel, representing the max number of outstanding
     NFS operations on the channel.
 
-RPC_Ioq_ThrdMax(uint32, range 1 to 1024*128 default 200)
+RPC_Ioq_ThrdMax(uint32, range 1 to 1024*128 default 512)
     TIRPC ioq max simultaneous io threads
 
 RPC_GSS_Npart(uint32, range 1 to 1021, default 13)
