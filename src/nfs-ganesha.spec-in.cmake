@@ -10,6 +10,13 @@ Requires: sles-release >= 12
 BuildRequires: openSUSE-release
 Requires: openSUSE-release
 %endif
+
+%if (0%{?sle_version} >= 150000)
+%define dist .sles15
+%else
+%define dist .sles12
+%endif
+
 %endif
 
 # Conditionally enable some FSALs, disable others.
@@ -119,7 +126,6 @@ BuildRequires:	cmake3
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	pkgconfig
-BuildRequires:	userspace-rcu-devel
 BuildRequires:	krb5-devel
 %if %{with rados_recov} || %{with rados_urls}
 BuildRequires: librados-devel >= 0.61
@@ -137,6 +143,18 @@ Requires:	dbus-1
 %else
 BuildRequires:	dbus-devel
 Requires:	dbus
+%endif
+
+%if ( 0%{?rhel} >= 9 )
+Requires:       dbus-tools
+%endif
+
+%if ( 0%{?suse_version} )
+BuildRequires:  liburcu-devel
+Requires:       liburcu6
+%else
+BuildRequires: userspace-rcu-devel
+Requires:      userspace-rcu
 %endif
 
 %if ( 0%{?suse_version} )
@@ -267,16 +285,17 @@ be used with NFS-Ganesha to support PROXY_V3 based filesystems
 %package utils
 Summary: The NFS-GANESHA util scripts
 Group: Applications/System
-%if ( 0%{?rhel} && 0%{?rhel} < 8 )
+%if (0%{?suse_version} && 0%{?sle_version} >= 150000)
+Requires:       python3-dbus-python, python3-pyparsing
+BuildRequires:  python3-devel
+%else
+%if (0%{?rhel} && 0%{?rhel} >= 8)
+Requires:       python3-dbus, python3-gobject, python3-pyparsing
+BuildRequires:  python3-devel
+%else
+# RHEL7.x
 Requires:       dbus-python, pygobject2, pyparsing
 BuildRequires:  python-devel
-%else
-Requires:	python3-gobject, python3-pyparsing
-BuildRequires:  python3-devel
-%if ( 0%{?suse_version} )
-Requires:	dbus-1-python
-%else
-Requires:	python3-dbus
 %endif
 %if ( ! 0%{?with_legacy_python_install} )
 BuildRequires:  python3-wheel
@@ -566,6 +585,9 @@ cmake3 .	-DCMAKE_BUILD_TYPE=Debug			\
 	-D_MSPAC_SUPPORT=%{use_mspac_support}		\
 	-DSANITIZE_ADDRESS=%{use_sanitize_address}	\
 	-DUSE_LEGACY_PYTHON_INSTALL=%{use_legacy_python_install}	\
+%if (0%{?suse_version} && 0%{?sle_version} >= 150000)
+        -DKRB5_PREFIX=/usr/lib/mit                      \
+%endif
 %if %{with jemalloc}
 	-DALLOCATOR=jemalloc 				\
 %endif

@@ -120,6 +120,11 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
       COMMAND awk -F=  "/^ID_LIKE=/ { print $2 }" /etc/os-release
       OUTPUT_VARIABLE ID_LIKE
    )
+  EXECUTE_PROCESS(
+     COMMAND awk -F=  "/^VERSION_ID=/ { print $2 }" /etc/os-release
+     OUTPUT_VARIABLE SYS_VERSION
+     ERROR_QUIET
+   )
 # Red Hat Enterprise Linux versions before 7.0 will be detected as UNKNOWN
 
   if( ${SYS_RELEASE} MATCHES "Red Hat" )
@@ -132,6 +137,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
      message( STATUS "Detected a Linux SLES machine" )
      set(DISTRO "SLES")
      set(LIBEXECDIR "/${CMAKE_INSTALL_PREFIX}/lib")
+     if( ${SYS_VERSION} VERSION_GREATER_EQUAL "15.0" )
+         set(KRB5_PREFIX "/usr/lib/mit")
+     endif( ${SYS_VERSION} VERSION_GREATER_EQUAL "15.0" )
   elseif( ${SYS_RELEASE} MATCHES "openSUSE Leap" )
      message( STATUS "Detected a Linux openSUSE Leap machine" )
      set(DISTRO "SLES")
