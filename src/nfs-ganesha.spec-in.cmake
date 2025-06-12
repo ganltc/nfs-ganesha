@@ -250,37 +250,6 @@ Provides: libganesha_monitoring.so
 The monitoring module contains metrics collectors and HTTP exposer
 in Prometheus format.
 
-%package vfs
-Summary: The NFS-GANESHA VFS FSAL
-Group: Applications/System
-BuildRequires: libattr-devel
-Requires: nfs-ganesha = %{version}-%{release}
-
-%description vfs
-This package contains a FSAL shared object to
-be used with NFS-Ganesha to support VFS based filesystems
-
-%package proxy-v4
-Summary: The NFS-GANESHA PROXY_V4 FSAL
-Group: Applications/System
-BuildRequires: libattr-devel
-Requires: nfs-ganesha = %{version}-%{release}
-
-%description proxy-v4
-This package contains a FSAL shared object to
-be used with NFS-Ganesha to support PROXY_V4 based filesystems
-
-%package proxy-v3
-Summary: The NFS-GANESHA PROXY_V3 FSAL
-Group: Applications/System
-BuildRequires: libattr-devel
-Requires: nfs-ganesha = %{version}-%{release}
-
-%description proxy-v3
-This package contains a FSAL shared object to
-be used with NFS-Ganesha to support PROXY_V3 based filesystems
-
-
 %if %{with utils}
 %package utils
 Summary: The NFS-GANESHA util scripts
@@ -575,10 +544,10 @@ cmake3 .	-DCMAKE_BUILD_TYPE=Debug			\
 	-DUSE_GUI_ADMIN_TOOLS=%{use_gui_utils}		\
 	-DUSE_RADOS_RECOV=%{use_rados_recov}		\
 	-DRADOS_URLS=%{use_rados_urls}			\
-	-DUSE_FSAL_VFS=ON				\
-	-DUSE_FSAL_PROXY_V4=ON				\
+	-DUSE_FSAL_VFS=OFF				\
+	-DUSE_FSAL_PROXY_V4=OFF				\
 	-DUSE_DBUS=ON					\
-	-DUSE_9P=%{use_9P}				\
+	-DUSE_9P=OFF 				\
 	-DDISTNAME_HAS_GIT_DATA=OFF			\
 	-DUSE_MAN_PAGE=%{use_man_page}                  \
 	-DRPCBIND=%{use_rpcbind}			\
@@ -797,26 +766,6 @@ exit 0
 %files -n ganesha_monitoring
 %{_libdir}/libganesha_monitoring*
 %{_libdir}/libntirpcmonitoring*
-
-%files vfs
-%{_libdir}/ganesha/libfsalvfs*
-%config(noreplace) %{_sysconfdir}/ganesha/vfs.conf
-%if %{with man_page}
-%{_mandir}/*/ganesha-vfs-config.8.gz
-%endif
-
-%files proxy-v4
-%{_libdir}/ganesha/libfsalproxy_v4*
-%if %{with man_page}
-%{_mandir}/*/ganesha-proxy-v4-config.8.gz
-%endif
-
-%files proxy-v3
-%{_libdir}/ganesha/libfsalproxy_v3*
-%if %{with man_page}
-%{_mandir}/*/ganesha-proxy-v3-config.8.gz
-%endif
-
 
 # Optional packages
 %if %{with lustre}
