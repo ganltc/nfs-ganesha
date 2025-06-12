@@ -112,7 +112,7 @@ Requires: openSUSE-release
 
 %define sourcename @CPACK_SOURCE_PACKAGE_FILE_NAME@
 
-Name:		nfs-ganesha
+Name:		gpfs.nfs-ganesha
 Version:	@GANESHA_BASE_VERSION@
 Release:	%{dev_version}%{?dist}
 Summary:	NFS-Ganesha is a NFS Server running in user space
@@ -223,7 +223,7 @@ Requires(pre): /usr/sbin/groupadd
 # Use CMake variables
 
 %description
-nfs-ganesha : NFS-GANESHA is a NFS Server running in user space.
+gpfs.nfs-ganesha : NFS-GANESHA is a NFS Server running in user space.
 It comes with various back-end modules (called FSALs) provided as
  shared objects to support different file systems and name-spaces.
 
@@ -237,12 +237,12 @@ This package contains the mount.9P script that clients can use
 to simplify mounting to NFS-GANESHA. This is a 9p mount helper.
 %endif
 
-%package -n ganesha_monitoring
+%package -n gpfs.ganesha_monitoring
 Summary: The NFS-GANESHA Monitoring module
 Group: Applications/System
 Provides: libganesha_monitoring.so
 
-%description -n ganesha_monitoring
+%description -n gpfs.ganesha_monitoring
 The monitoring module contains metrics collectors and HTTP exposer
 in Prometheus format.
 
@@ -358,7 +358,7 @@ is used for speed and latency testing.
 %package gpfs
 Summary: The NFS-GANESHA GPFS FSAL
 Group: Applications/System
-Requires: nfs-ganesha = %{version}-%{release}
+Requires: gpfs.nfs-ganesha = %{version}-%{release}
 
 %description gpfs
 This package contains a FSAL shared object to
@@ -668,7 +668,7 @@ exit 0
 %endif
 
 %files
-%{_bindir}/ganesha.nfsd
+%{_bindir}/gpfs.ganesha.nfsd
 %{_libdir}/libganesha_nfsd.so*
 %config %{_sysconfdir}/dbus-1/system.d/org.ganesha.nfsd.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/ganesha
@@ -719,7 +719,7 @@ exit 0
 %endif
 %endif
 
-%files -n ganesha_monitoring
+%files -n gpfs.ganesha_monitoring
 %{_libdir}/libganesha_monitoring*
 %{_libdir}/libntirpcmonitoring*
 
