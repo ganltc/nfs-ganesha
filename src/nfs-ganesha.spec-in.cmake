@@ -220,10 +220,6 @@ Requires(post): psmisc
 Requires(pre): /usr/sbin/useradd
 Requires(pre): /usr/sbin/groupadd
 
-%if ( 0%{?fedora} >= 30 || 0%{?rhel} >= 8 )
-Requires: nfs-ganesha-selinux = %{version}-%{release}
-%endif
-
 # Use CMake variables
 
 %description
@@ -452,34 +448,6 @@ This package contains a FSAL shared object to
 be used with NFS-Ganesha to support Gluster
 %endif
 
-# SELINUX
-%if ( 0%{?fedora} >= 30 || 0%{?rhel} >= 8 )
-%package selinux
-Summary: The NFS-GANESHA SELINUX targeted policy
-Group: Applications/System
-BuildArch:	noarch
-Requires:	nfs-ganesha = %{version}-%{release}
-BuildRequires: selinux-policy-devel
-%{?selinux_requires}
-
-%description selinux
-This package contains an selinux policy for running ganesha.nfsd
-
-%post selinux
-%selinux_modules_install %{_selinux_store_path}/packages/ganesha.pp.bz2
-
-%pre selinux
-%selinux_relabel_pre
-
-%postun selinux
-if [ $1 -eq 0 ]; then
-    %selinux_modules_uninstall ganesha
-fi
-
-%posttrans
-%selinux_relabel_post
-%endif
-
 # NTIRPC (if built-in)
 %if ! %{with system_ntirpc}
 %package -n libntirpc
@@ -572,11 +540,6 @@ cmake3 .	-DCMAKE_BUILD_TYPE=Debug			\
 
 make %{?_smp_mflags} || make %{?_smp_mflags} || make
 
-%if ( 0%{?fedora} >= 30 || 0%{?rhel} >= 8 )
-make -C selinux -f /usr/share/selinux/devel/Makefile ganesha.pp
-pushd selinux && bzip2 -9 ganesha.pp && popd
-%endif
-
 %install
 mkdir -p %{buildroot}%{_sysconfdir}/ganesha/
 mkdir -p %{buildroot}%{_sysconfdir}/dbus-1/system.d
@@ -646,13 +609,6 @@ install -m 644 config_samples/gpfs.ganesha.exports.conf	%{buildroot}%{_sysconfdi
 %endif
 
 make DESTDIR=%{buildroot} install
-
-%if ( 0%{?fedora} >= 30 || 0%{?rhel} >= 8 )
-install -d %{buildroot}%{_selinux_store_path}/packages
-install -d -p %{buildroot}%{_selinux_store_path}/devel/include/contrib
-install -p -m 644 selinux/ganesha.if %{buildroot}%{_selinux_store_path}/devel/include/contrib
-install -m 0644 selinux/ganesha.pp.bz2 %{buildroot}%{_selinux_store_path}/packages
-%endif
 
 %if ( ! 0%{?with_legacy_python_install} )
 %if ( 0%{?with_gpfs} )
@@ -838,12 +794,6 @@ exit 0
 %if %{with man_page}
 %{_mandir}/*/ganesha-gluster-config.8.gz
 %endif
-%endif
-
-%if ( 0%{?fedora} >= 30 || 0%{?rhel} >= 8 )
-%files selinux
-%attr(0644,root,root) %{_selinux_store_path}/packages/ganesha.pp.bz2
-%attr(0644,root,root) %{_selinux_store_path}/devel/include/contrib/ganesha.if
 %endif
 
 %if ! %{with system_ntirpc}
