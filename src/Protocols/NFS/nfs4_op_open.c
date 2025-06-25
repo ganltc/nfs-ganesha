@@ -1019,14 +1019,11 @@ static void open4_ex(OPEN4args *arg,
 		/* We need an extra reference below. */
 		file_obj->obj_ops->get_ref(file_obj);
 	} else {
-		old_openflags =
-			file_obj->obj_ops->status2(file_obj, *file_state);
-
 		/* Open upgrade */
 		LogFullDebug(COMPONENT_STATE, "Calling reopen2");
 
 		status = fsal_reopen2(file_obj, *file_state,
-				      openflags | old_openflags, true);
+				      openflags, true);
 
 		if (FSAL_IS_ERROR(status)) {
 			res_OPEN4->status = nfs4_Errno_status(status);
