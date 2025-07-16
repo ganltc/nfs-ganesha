@@ -166,7 +166,7 @@ if(Python3_FOUND)
     install(
       CODE
       "execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMAND ${Python3_EXECUTABLE} -m installer --destdir \$ENV{DESTDIR} dist/ganeshactl-${GANESHA_MAJOR_VERSION}${GANESHA_MINOR_VERSION}-py3-none-any.whl)"
+        COMMAND ${Python3_EXECUTABLE} -m installer --destdir \$ENV{DESTDIR} dist/ganeshactl-${GANESHA_MAJOR_VERSION}${GANESHA_MINOR_VERSION}+${GANESHA_TAG}-py3-none-any.whl)"
       )
   endif()
 endif(Python3_FOUND)
