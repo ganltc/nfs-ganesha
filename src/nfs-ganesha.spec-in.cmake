@@ -218,6 +218,10 @@ Requires(post): psmisc
 Requires(pre): /usr/sbin/useradd
 Requires(pre): /usr/sbin/groupadd
 
+# This is required for gpfs.pm-ganesha. This is temporary fix until
+# gpfs.pm-ganesha correct package dependency
+Provides:  nfs-ganesha = %{version}-%{release}
+
 # Use CMake variables
 
 %description
