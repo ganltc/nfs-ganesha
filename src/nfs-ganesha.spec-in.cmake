@@ -235,14 +235,15 @@ This package contains the mount.9P script that clients can use
 to simplify mounting to NFS-GANESHA. This is a 9p mount helper.
 %endif
 
-%package -n gpfs.ganesha_monitoring
-Summary: The NFS-GANESHA Monitoring module
-Group: Applications/System
-Provides: libganesha_monitoring.so
+# Build ganesha_monitoring in base package
+#%package -n gpfs.ganesha_monitoring
+#Summary: The NFS-GANESHA Monitoring module
+#Group: Applications/System
+#Provides: libganesha_monitoring.so
 
-%description -n gpfs.ganesha_monitoring
-The monitoring module contains metrics collectors and HTTP exposer
-in Prometheus format.
+#%description -n gpfs.ganesha_monitoring
+#The monitoring module contains metrics collectors and HTTP exposer
+#in Prometheus format.
 
 %if %{with utils}
 %package utils
@@ -628,6 +629,8 @@ exit 0
 %files
 %{_bindir}/gpfs.ganesha.nfsd
 %{_libdir}/libganesha_nfsd.so*
+%{_libdir}/libganesha_monitoring*
+%{_libdir}/libntirpcmonitoring*
 %if ! %{with system_ntirpc}
 %{_libdir}/libntirpc.so.@NTIRPC_VERSION_EMBED@
 %{_libdir}/libntirpc.so.@NTIRPC_ABI_EMBED@
@@ -687,10 +690,6 @@ exit 0
 %{_mandir}/*/ganesha-9p-config.8.gz
 %endif
 %endif
-
-%files -n gpfs.ganesha_monitoring
-%{_libdir}/libganesha_monitoring*
-%{_libdir}/libntirpcmonitoring*
 
 # Optional packages
 %if %{with lustre}
