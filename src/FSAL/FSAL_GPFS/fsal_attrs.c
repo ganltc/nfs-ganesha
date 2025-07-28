@@ -61,7 +61,7 @@ GPFSFSAL_fs_loc(struct fsal_export *export, struct gpfs_filesystem *gpfs_fs,
 {
 	char root[MAXPATHLEN];
 	char path[MAXPATHLEN];
-	char server[MAXHOSTNAMELEN];
+	char server[MAXHOSTNAMELEN + 1] = { 0 };
 	int errsv, rc;
 	struct fs_loc_arg loc_arg;
 	struct gpfs_fsal_export *exp = container_of(op_ctx->fsal_export,
