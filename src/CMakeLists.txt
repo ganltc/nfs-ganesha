@@ -237,7 +237,7 @@ gopt_test(USE_RELATIVE_FILE_PATHS_IN_LOGS)
 include(CheckCCompilerFlag)
 CHECK_C_COMPILER_FLAG("-fmacro-prefix-map=old=new" HAS_MACRO_PREFIX_MAP_FLAG)
 
-if(${HAS_MACRO_PREFIX_MAP_FLAG} AND USE_RELATIVE_FILE_PATHS_IN_LOGS)
+if(HAS_MACRO_PREFIX_MAP_FLAG AND USE_RELATIVE_FILE_PATHS_IN_LOGS)
   add_compile_options(-fmacro-prefix-map=${GANESHA_TOP_CMAKE_DIR}/=./)
 endif()
 
