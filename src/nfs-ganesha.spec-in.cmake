@@ -122,7 +122,7 @@ Url:		https://github.com/nfs-ganesha/nfs-ganesha/wiki
 
 Source:		%{sourcename}.tar.gz
 
-BuildRequires:	cmake3
+BuildRequires:	cmake
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	pkgconfig
@@ -455,7 +455,7 @@ be used with NFS-Ganesha to support Gluster
 %setup -q -n %{sourcename}
 
 %build
-cmake3 .	-DCMAKE_BUILD_TYPE=Debug			\
+cmake .	-DCMAKE_BUILD_TYPE=Debug			\
 	-DBUILD_CONFIG=rpmbuild				\
 	-DUSE_FSAL_NULL=%{use_fsal_null}		\
 	-DUSE_FSAL_MEM=%{use_fsal_mem}			\
