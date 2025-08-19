@@ -7,3 +7,4 @@ usr/lib/ganesha/*
 usr/bin/*
 usr/lib/libntirpc*
 usr/lib/libganesha_nfsd*
+usr/lib/libganesha_monitoring*
