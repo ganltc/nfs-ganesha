@@ -71,8 +71,8 @@ struct gpfs_fsal_module
 			/** not working with pNFS */
 			.delegations = FSAL_OPTION_FILE_READ_DELEG,
 #endif
-				 .pnfs_mds = true,
-				 .pnfs_ds = true,
+				 .pnfs_mds = false,
+				 .pnfs_ds = false,
 				 .fsal_trace = true,
 				 .fsal_grace = false,
 				 .link_supports_permission_checks = true,
