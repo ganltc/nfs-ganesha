@@ -355,7 +355,7 @@ goption(USE_FSAL_SAUNAFS "build SAUNAFS FSAL shared library" ON)
 option(GSH_CAN_HOST_LOCAL_FS "Ganesha supports hosting local filesystems" ON)
 
 # Monitoring stack.
-goption(USE_MONITORING "Enable monitoring stack" ON)
+goption(USE_MONITORING "Enable monitoring stack" OFF)
 gopt_test(USE_MONITORING)
 
 # nTIRPC
